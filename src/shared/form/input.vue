@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="root-wrapper">
     <div class="input" v-if="type === 'password' || type === 'text'" :data-style="style_">
       <span class="title" v-if="label">{{label}}</span>
       <input
@@ -8,11 +8,14 @@
           :type="!forceTextType ? type : 'text'"
           :data-type="type"
       >
-      <div
-          class="toggle-showing"
-          v-if="type === 'password'"
-          @click="forceTextType = !forceTextType"
-      >
+      <div>
+        <div
+            class="toggle-showing"
+            v-if="type === 'password'"
+            @click="forceTextType = !forceTextType"
+            :data-togled="forceTextType"
+        >
+        </div>
       </div>
       <div class="line" v-if="style_ === 'monolith'"></div>
     </div>
@@ -20,6 +23,11 @@
 </template>
 
 <style lang="scss">
+
+  .root-wrapper {
+    padding: 10px 0;
+  }
+
   .input[data-style="monolith"] {
     margin-top: 21px;
     height: 60px;
@@ -136,18 +144,24 @@
     position: absolute;
 
     bottom: 0;
-    width: 100%;
+    width: calc(100% - 40px);
     margin-left: 20px;
     height: 2px;
     background-color: #785FF7;;
   }
 
   .toggle-showing {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
     background-color: #785FF7;
-    margin-right: 10px;
+    margin-right: 25px;
+
+    &[data-togled=true] {
+      background-color: transparent;
+      outline: 2px solid #785FF7;
+    }
+
   }
 </style>
 

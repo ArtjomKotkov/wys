@@ -8,6 +8,8 @@
 
     <div class="week-key-input" v-if="showWeekKeyInput">
       <input-component v-model="value" type="password" label="Секретный ключ недели" style_="monolith"></input-component>
+      <input-component v-model="value" type="text" label="Секретный ключ недели" style_="monolith"></input-component>
+      <input-component v-model="value" type="text" label="Секретный ключ недели" style_="rounded"></input-component>
 
       <input type="color">
       <button>Применить</button>
