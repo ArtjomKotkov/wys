@@ -76,7 +76,6 @@
 
   .input[data-style="rounded"] {
     height: 60px;
-    width: 400px;
     outline: 2px solid #785FF7;
     background-color: var(--dark-gray);
 

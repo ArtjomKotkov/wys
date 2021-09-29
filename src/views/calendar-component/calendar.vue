@@ -7,22 +7,16 @@
     </div>
 
     <div class="week-key-input" v-if="showWeekKeyInput">
-      <input-component v-model="value" type="password" label="Секретный ключ недели" style_="monolith"></input-component>
-      <input-component v-model="value" type="text" label="Секретный ключ недели" style_="monolith"></input-component>
-      <input-component v-model="value" type="text" label="Секретный ключ недели" style_="rounded"></input-component>
-
-      <input type="color">
-      <button>Применить</button>
+      <input-component class="secret-key-input" v-model="value" type="password" label="Секретный ключ недели" style_="rounded"></input-component>
+      <color-picker-component v-model="color" :lightness="70"></color-picker-component>
     </div>
 
   </div>
 </template>
 
-<style>
+<style lang="scss">
   .calendar-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    display: inline-block;
   }
 
   .calendar {
@@ -30,6 +24,19 @@
     flex-direction: row;
 
     font-weight: 400;
+  }
+
+  .week-key-input {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    & .secret-key-input {
+      margin-right: 15px;
+      flex-grow: 1;
+    }
+
   }
 
 </style>
@@ -41,19 +48,23 @@ import {Calendar, WeekInfo} from "@/logic/calendar/types";
 import WeekComponent from "@/views/calendar-component/week-component/week.vue";
 import InputComponent from "@/shared/form/input.vue";
 import {Watch} from "vue-property-decorator";
+import HslColorPickerComponent from "@/shared/form/color-picker.vue";
+import ColorPicker from "@/shared/form/color-picker.vue";
 
 
 @Options({
   components: {
     WeekComponent,
     InputComponent,
+    ColorPickerComponent: HslColorPickerComponent,
   }
 })
 export default class CalendarComponent extends Vue {
 
     private calendarService = new CalendarService();
 
-    value = 'test'
+    value = 'test';
+    color = [180, 50];
 
     get showWeekKeyInput(): boolean {
       return Boolean(this.$route.params.dateRange)

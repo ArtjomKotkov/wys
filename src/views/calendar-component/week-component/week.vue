@@ -46,7 +46,7 @@
 import {Options, Vue} from 'vue-class-component';
 import {WeekInfo} from "@/logic/calendar/types";
 import DayComponent from "@/views/calendar-component/week-component/day-component/day.vue";
-import {dayToString, hslToRgb, isEqualDay, stringToDate} from "@/logic/calendar/utils";
+import {dayToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
 import {Prop} from "vue-property-decorator";
 
 
@@ -74,12 +74,6 @@ export default class WeekComponent extends Vue {
     const date2 = stringToDate(dateString2);
 
     return isEqualDay(this.week[0].fullDate, date1) && isEqualDay(this.week[6].fullDate, date2);
-  }
-
-  getRandomColor(lightness: number): string {
-    const rgb = hslToRgb(~~(1000 * Math.random())/1000, 1, lightness/100);
-
-    return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`
   }
 
 }
