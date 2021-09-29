@@ -1,11 +1,16 @@
 <template>
   <div class="calendar-wrapper">
     <div class="calendar">
-      <div class="week" v-for="week in calendar" :key="week">
-        <week-component :week="week"></week-component>
+      <div class="week" v-for="(week, index) in calendar" :key="week">
+        <week-component
+            :week="week"
+            :index="index"
+
+            @Selected="resetConfigInputs"
+        ></week-component>
       </div>
     </div>
-
+    {{color}}
     <div class="week-key-input" v-if="showWeekKeyInput">
       <input-component class="secret-key-input" v-model="value" type="password" label="Секретный ключ недели" style_="rounded"></input-component>
       <color-picker-component v-model="color" :lightness="70"></color-picker-component>
@@ -47,9 +52,10 @@ import {CalendarService} from "@/logic/calendar/calendar";
 import {Calendar, WeekInfo} from "@/logic/calendar/types";
 import WeekComponent from "@/views/calendar-component/week-component/week.vue";
 import InputComponent from "@/shared/form/input.vue";
-import {Watch} from "vue-property-decorator";
+import {Provide, ProvideReactive} from "vue-property-decorator";
 import HslColorPickerComponent from "@/shared/form/color-picker.vue";
-import ColorPicker from "@/shared/form/color-picker.vue";
+import {EntitySelectorService} from "@/logic";
+import {hslConfig} from "@/shared/form";
 
 
 @Options({
@@ -60,16 +66,18 @@ import ColorPicker from "@/shared/form/color-picker.vue";
   }
 })
 export default class CalendarComponent extends Vue {
-
     private calendarService = new CalendarService();
 
+    defaultColorValue: hslConfig = [180, 50];
     value = 'test';
-    color = [180, 50];
+
+    @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
+    @ProvideReactive('color') color: hslConfig = this.defaultColorValue;
+
 
     get showWeekKeyInput(): boolean {
       return Boolean(this.$route.params.dateRange)
     }
-
 
     get calendar(): WeekInfo[] {
         let calendar = this.calendarService.make();
@@ -116,6 +124,10 @@ export default class CalendarComponent extends Vue {
         }
       }
       return months;
+    }
+
+    private resetConfigInputs(): void {
+      this.color = this.defaultColorValue;
     }
 }
 </script>

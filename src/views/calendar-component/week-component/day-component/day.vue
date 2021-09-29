@@ -35,8 +35,6 @@
 
     cursor: pointer;
 
-    filter: not-r;
-
     &[data-is-additional=false]:hover {
       background-color: #403D3D !important;
       border: 1px solid #785FF7;
@@ -75,30 +73,36 @@
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
-import {Prop} from "vue-property-decorator";
+import {Inject, Prop} from "vue-property-decorator";
 import {DayInfo} from "@/logic/calendar/types";
 import {dayToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
+import {EntitySelectorService} from "@/logic";
+import {Entity} from "@/logic/services/types";
 
 
 @Options({})
 export default class DayComponent extends Vue {
-
   @Prop(Object) day!: DayInfo;
+
+  private entity: Entity = {type: 'date', id: this.getId()};
+
+  @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
+
 
   selectDay(): void {
     if (this.day.isAdditional) {
       return;
     }
+    this.entitySelectorService.select(this.entity);
     this.$router.push({path:`/day/${dayToString(this.day.fullDate)}`})
   }
 
   get selected(): boolean {
-    const dateData = this.$route.params.date as string;
-    if (!dateData) {
-      return false;
-    }
-    const date = stringToDate(dateData);
-    return isEqualDay(this.day.fullDate, date);
+    return this.entitySelectorService.isSelected(this.entity);
+  }
+
+  getId(): string {
+    return `${dayToString(this.day.fullDate)}`;
   }
 
   get markerColor(): string {
