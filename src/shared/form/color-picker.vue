@@ -69,14 +69,15 @@ export default class HslColorPickerComponent extends Vue {
 
   showed = false;
 
-  mounted(): void {
+  @Watch('modelValue')
+  updateHueAndLightness(): void {
     [this.hue, this.lightness] = this.modelValue;
   }
 
   @Watch('hue')
   @Watch('lightness')
   updateModelValue(): void {
-    this.$emit('update:modelValue', [this.hue, this.lightness])
+    this.$emit('update:modelValue', [Number(this.hue), Number(this.lightness)])
   }
 
   get hueGradientStyle(): string {
