@@ -77,7 +77,7 @@ import {Inject, Prop} from "vue-property-decorator";
 import {DayInfo} from "@/logic/calendar/types";
 import {dayToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
 import {EntitySelectorService} from "@/logic";
-import {Entity} from "@/logic/services/types";
+import {Entity} from "@/logic/services/entity-selector/types";
 
 
 @Options({})

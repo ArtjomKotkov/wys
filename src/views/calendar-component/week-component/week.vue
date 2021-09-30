@@ -48,7 +48,7 @@ import {WeekInfo} from "@/logic/calendar/types";
 import DayComponent from "@/views/calendar-component/week-component/day-component/day.vue";
 import {dayToString} from "@/logic/calendar/utils";
 import {Prop, Inject, InjectReactive, Emit} from "vue-property-decorator";
-import {Entity} from "@/logic/services/types";
+import {Entity} from "@/logic/services/entity-selector/types";
 import {EntitySelectorService} from "@/logic";
 import {hslConfig, hslConfigToBackgroundOption} from "@/shared";
 

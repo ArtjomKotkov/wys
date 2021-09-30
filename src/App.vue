@@ -11,6 +11,10 @@
   --light-gray: #2B2828;
   --medium-gray: #1C1C1C;
 
+  --main-color: #785FF7;
+  --secondary-color: #42348C;
+  --third-color: #7263BD;
+
   font-family: 'Roboto', sans-serif;
 
   background-color: var(--dark-gray);
