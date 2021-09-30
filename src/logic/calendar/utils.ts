@@ -10,7 +10,25 @@ export const dayIsWeekend = (dayIndex: number) : boolean => [0, 6].includes(dayI
 
 export const getDaysInMonth = (year: number, month: number) : number => new Date(year, month, 0).getDate();
 
-export const addMonth = (current: Date, months: number) : Date => new Date(current.setMonth(current.getMonth()+months));
+export const addMonth = (current: Date, months: number) : Date => {
+    const dateCopy = new Date(current.getTime());
+    return new Date(dateCopy.setMonth(dateCopy.getMonth()+months));
+}
+
+export const setFirstDay = (current: Date) : Date => {
+    const dateCopy = new Date(current.getTime());
+    return new Date(dateCopy.setDate(1));
+}
+
+export const setLastDay = (current: Date) : Date => {
+    const dateCopy = new Date(current.getTime());
+    return new Date(dateCopy.setDate(getDaysInMonth(dateCopy.getFullYear(), dateCopy.getMonth())));
+}
+
+export const setYear = (current: Date, year: number) : Date => {
+    const dateCopy = new Date(current.getTime());
+    return new Date(dateCopy.setFullYear(year));
+}
 
 export const dayToString = (day: Date) : string => `${day.getDate()}.${day.getMonth()+1}.${day.getFullYear()}`;
 

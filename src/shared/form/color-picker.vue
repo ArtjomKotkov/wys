@@ -62,17 +62,16 @@ import ColorSliderComponent from "@/shared/form/shared/slider.vue";
   components: {SliderComponent: ColorSliderComponent}
 })
 export default class HslColorPickerComponent extends Vue {
-  @Prop() modelValue: number[] = [180, 50];
+  @Prop() modelValue!: number[];
 
   hue = 180;
   lightness = 50;
 
-  showed = false;
-
-  @Watch('modelValue')
-  updateHueAndLightness(): void {
+  created(): void {
     [this.hue, this.lightness] = this.modelValue;
   }
+
+  showed = false;
 
   @Watch('hue')
   @Watch('lightness')

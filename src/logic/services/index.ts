@@ -1,1 +1,1 @@
-export * from './entity-selector.service';
+export * from './entity-selector';

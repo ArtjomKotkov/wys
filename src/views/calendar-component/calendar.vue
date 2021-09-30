@@ -1,16 +1,17 @@
 <template>
   <div class="calendar-wrapper">
+    <year-month-selector v-model="selectedMonth"></year-month-selector>
     <div class="calendar">
-      <div class="week" v-for="(week, index) in calendar" :key="week">
-        <week-component
-            :week="week"
-            :index="index"
+      <week-component
+          v-for="(week, index) in calendar"
+          :key="getKeyByWeek(week)"
 
-            @Selected="resetConfigInputs"
-        ></week-component>
-      </div>
+          :week="week"
+          :index="index"
+
+          @Selected="resetConfigInputs"
+      ></week-component>
     </div>
-    {{color}}
     <div class="week-key-input" v-if="showWeekKeyInput">
       <input-component class="secret-key-input" v-model="value" type="password" label="Секретный ключ недели" style_="rounded"></input-component>
       <color-picker-component v-model="color" :lightness="70"></color-picker-component>
@@ -22,16 +23,23 @@
 <style lang="scss">
   .calendar-wrapper {
     display: inline-block;
+    width: 660px;
   }
 
   .calendar {
+    margin-top: 20px;
+
     display: flex;
     flex-direction: row;
+    justify-content: center;
 
     font-weight: 400;
+    min-width: 560px;
   }
 
   .week-key-input {
+    width: 85%;
+    margin-left: 7.5%;
     margin-top: 20px;
     display: flex;
     flex-direction: row;
@@ -56,31 +64,33 @@ import {Provide, ProvideReactive} from "vue-property-decorator";
 import HslColorPickerComponent from "@/shared/form/color-picker.vue";
 import {EntitySelectorService} from "@/logic";
 import {hslConfig} from "@/shared/form";
+import YearMonthSelector from "./year-month-selector-component/year-month-selector.vue";
 
 
 @Options({
   components: {
     WeekComponent,
     InputComponent,
+    YearMonthSelector,
     ColorPickerComponent: HslColorPickerComponent,
   }
 })
 export default class CalendarComponent extends Vue {
     private calendarService = new CalendarService();
 
-    defaultColorValue: hslConfig = [180, 50];
+    defaultColorValue: hslConfig = [180, 80];
     value = 'test';
+    selectedMonth: Date = new Date();
 
     @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
     @ProvideReactive('color') color: hslConfig = this.defaultColorValue;
-
 
     get showWeekKeyInput(): boolean {
       return Boolean(this.$route.params.dateRange)
     }
 
     get calendar(): WeekInfo[] {
-        let calendar = this.calendarService.make();
+        let calendar = this.calendarService.makeFromDate(this.selectedMonth);
         const monthsInfo = this.extractMonths(calendar);
         return this.concatMonths(monthsInfo)
     }
@@ -128,6 +138,10 @@ export default class CalendarComponent extends Vue {
 
     private resetConfigInputs(): void {
       this.color = this.defaultColorValue;
+    }
+
+    getKeyByWeek(week: WeekInfo): string {
+      return JSON.stringify(week)
     }
 }
 </script>

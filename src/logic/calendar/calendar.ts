@@ -1,5 +1,13 @@
 import {Calendar, DayInfo, devMonthInfo, WeekInfo} from "./types";
-import {addMonth, dayIndexToCode, dayIsWeekend, getDaysInMonth, isEqualDay} from "@/logic/calendar/utils";
+import {
+    addMonth,
+    dayIndexToCode,
+    dayIsWeekend,
+    getDaysInMonth,
+    isEqualDay,
+    setFirstDay,
+    setLastDay
+} from "@/logic/calendar/utils";
 
 import _ from 'lodash';
 import Holidays from 'date-holidays';
@@ -9,18 +17,11 @@ export class CalendarService {
 
     holidays = new Holidays('RU');
 
-    make(from?: Date, to?: Date): Calendar {
-        if (from && to) {
-            return this.makeCalendar(from, to);
-        } else {
-            const currentDate = new Date();
-
-            return this.makeCalendar(
-                new Date(new Date().setMonth(currentDate.getMonth()-1)),
-                new Date(new Date().setMonth(currentDate.getMonth()+1))
-            );
-        }
-
+    makeFromDate(date: Date): Calendar {
+        return this.makeCalendar(
+            setFirstDay(addMonth(date, -1)),
+            setLastDay(addMonth(date, 1)),
+        );
     }
 
     private makeCalendar(from: Date, to: Date): Calendar {
