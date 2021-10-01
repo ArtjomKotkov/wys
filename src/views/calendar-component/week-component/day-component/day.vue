@@ -5,7 +5,7 @@
       :data-is-holiday="day.isHoliday"
       :data-is-weekend="day.isWeekend"
       :data-is-selected="selected"
-      @click="selectDay()"
+      @click.self="selectDay()"
   >
     {{day.date}}
 

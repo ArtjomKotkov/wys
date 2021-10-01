@@ -1,5 +1,5 @@
 <template>
-  <div class="calendar-wrapper">
+  <div class="calendar-wrapper" @click.self="entitySelectorService.resetSelection()">
     <year-month-selector v-model="selectedMonth"></year-month-selector>
     <div class="calendar">
       <week-component
@@ -13,7 +13,14 @@
       ></week-component>
     </div>
     <div class="week-key-input" v-if="showWeekKeyInput">
-      <input-component class="secret-key-input" v-model="value" type="password" label="Секретный ключ недели" style_="rounded"></input-component>
+      <input-component
+          class="secret-key-input"
+          v-model="value"
+          type="password"
+          label="Секретный ключ недели"
+          style_="rounded"
+          :placeholder="'Введите ключ'"
+      ></input-component>
       <color-picker-component v-model="color" :lightness="70"></color-picker-component>
     </div>
 
@@ -79,7 +86,7 @@ export default class CalendarComponent extends Vue {
     private calendarService = new CalendarService();
 
     defaultColorValue: hslConfig = [180, 80];
-    value = 'test';
+    value = '';
     selectedMonth: Date = new Date();
 
     @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();

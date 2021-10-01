@@ -7,6 +7,7 @@
           @input="$emit('update:modelValue', $event.target.value)"
           :type="!forceTextType ? type : 'text'"
           :data-type="type"
+          :placeholder="placeholder"
       >
       <div>
         <div
@@ -132,6 +133,13 @@
     color: white;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
+
+    &::placeholder {
+      color: var(--light-gray);
+      font-size: 18px;
+      line-height: 60px;
+    }
+
   }
 
   input[data-type='password'] {
@@ -167,6 +175,7 @@
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
+import placeholder from "lodash/fp/placeholder";
 
 
 @Options({})
@@ -175,6 +184,7 @@ export default class InputComponent extends Vue {
   @Prop(String) type!: 'text' | 'password';
   @Prop(String) style_: 'rounded' | 'monolith' = 'rounded';
   @Prop(String) label = '';
+  @Prop(String) placeholder?: string;
 
   forceTextType = false;
 }
