@@ -15,6 +15,11 @@ export const addMonth = (current: Date, months: number) : Date => {
     return new Date(dateCopy.setMonth(dateCopy.getMonth()+months));
 }
 
+export const addDay = (current: Date, days: number) : Date => {
+    const dateCopy = new Date(current.getTime());
+    return new Date(dateCopy.setDate(dateCopy.getDate()+days));
+}
+
 export const setFirstDay = (current: Date) : Date => {
     const dateCopy = new Date(current.getTime());
     return new Date(dateCopy.setDate(1));
@@ -22,7 +27,7 @@ export const setFirstDay = (current: Date) : Date => {
 
 export const setLastDay = (current: Date) : Date => {
     const dateCopy = new Date(current.getTime());
-    return new Date(dateCopy.setDate(getDaysInMonth(dateCopy.getFullYear(), dateCopy.getMonth())));
+    return new Date(dateCopy.setDate(getDaysInMonth(dateCopy.getFullYear(), dateCopy.getMonth()+1)));
 }
 
 export const setYear = (current: Date, year: number) : Date => {
@@ -30,7 +35,7 @@ export const setYear = (current: Date, year: number) : Date => {
     return new Date(dateCopy.setFullYear(year));
 }
 
-export const dayToString = (day: Date) : string => `${day.getDate()}.${day.getMonth()+1}.${day.getFullYear()}`;
+export const dateToString = (day: Date) : string => `${day.getDate()}.${day.getMonth()+1}.${day.getFullYear()}`;
 
 export const stringToDate = (day: string) : Date => {
     const [year, month, date] = day.split('.').reverse().map(item => Number(item));
@@ -42,3 +47,17 @@ export const isEqualDay = (date1: Date, date2: Date): boolean => {
         && date1.getMonth() === date2.getMonth()
         && date1.getFullYear() === date2.getFullYear();
 };
+
+export const calculatePreviousMonth = (date: Date): Date => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    return new Date(month === 0 ? year -1 : year, month === 0 ? 11 : month -1 );
+}
+
+export const calculateNextMonth = (date: Date): Date => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    return new Date(month === 11 ? year + 1 : year, month === 11 ? 0 : month + 1);
+}

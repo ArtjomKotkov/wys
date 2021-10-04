@@ -15,6 +15,8 @@
   --secondary-color: #42348C;
   --third-color: #7263BD;
 
+  --invalid-red: #F75F68;
+
   font-family: 'Roboto', sans-serif;
 
   background-color: var(--dark-gray);
@@ -25,15 +27,23 @@
 }
 </style>
 
-<script>
-import CalendarComponent from "@/views/calendar-component/calendar";
-import MainComponent from "@/views/main-component/main";
+<script lang="ts">
+import {Options, Vue} from "vue-class-component";
+import {Provide} from "vue-property-decorator";
+import {WeekService} from "@/logic";
+import MainComponent from "@/views/main-component/main.vue";
+import CalendarComponent from "@/views/calendar-component/calendar.vue";
 
-export default {
-  name: "App",
+
+@Options({
   components: {
     CalendarComponent,
-    MainComponent,
-  },
-};
+    MainComponent
+  }
+})
+export default class App extends Vue {
+  @Provide('weekConfigService') weekConfigService: WeekService = new WeekService();
+}
+
+
 </script>

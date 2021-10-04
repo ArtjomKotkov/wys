@@ -67,15 +67,23 @@ export default class HslColorPickerComponent extends Vue {
   hue = 180;
   lightness = 50;
 
-  created(): void {
+  beforeCreate(): void {
     [this.hue, this.lightness] = this.modelValue;
   }
 
   showed = false;
 
+  @Watch('modelValue')
+  updateHueAndLightness(): void {
+    [this.hue, this.lightness] = this.modelValue;
+  }
+
   @Watch('hue')
   @Watch('lightness')
   updateModelValue(): void {
+    if (this.hue === this.modelValue[0] && this.lightness === this.modelValue[1]) {
+      return;
+    }
     this.$emit('update:modelValue', [Number(this.hue), Number(this.lightness)])
   }
 

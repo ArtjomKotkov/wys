@@ -1,6 +1,6 @@
 import {Calendar, DayInfo, devMonthInfo, WeekInfo} from "./types";
 import {
-    addMonth,
+    addMonth, calculateNextMonth, calculatePreviousMonth,
     dayIndexToCode,
     dayIsWeekend,
     getDaysInMonth,
@@ -19,8 +19,8 @@ export class CalendarService {
 
     makeFromDate(date: Date): Calendar {
         return this.makeCalendar(
-            setFirstDay(addMonth(date, -1)),
-            setLastDay(addMonth(date, 1)),
+            setFirstDay(calculatePreviousMonth(date)),
+            setLastDay(calculateNextMonth(date)),
         );
     }
 
