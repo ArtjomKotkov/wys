@@ -4,6 +4,8 @@ export type WeekEntity = {
     id: string;
     type: 'week';
     index: number;
+    from: Date;
+    to: Date;
 }
 
 export type DayEntity = {

@@ -73,11 +73,12 @@
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
-import {Inject, Prop} from "vue-property-decorator";
+import {Inject, Prop, Watch} from "vue-property-decorator";
 import {DayInfo} from "@/logic/calendar/types";
-import {dayToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
+import {dateToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
 import {EntitySelectorService} from "@/logic";
 import {Entity} from "@/logic/services/entity-selector/types";
+import {hslConfigToBackgroundOption} from "@/shared";
 
 
 @Options({})
@@ -89,12 +90,23 @@ export default class DayComponent extends Vue {
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
 
 
+  created(): void {
+    this.$router.isReady().then(_ => this.routeUpdate());
+  }
+
+  @Watch('$route')
+  routeUpdate(): void {
+    if (this.$route.params.date == this.getId()) {
+      this.selectDay();
+    }
+  }
+
   selectDay(): void {
     if (this.day.isAdditional) {
       return;
     }
     this.entitySelectorService.select(this.entity);
-    this.$router.push({path:`/day/${dayToString(this.day.fullDate)}`})
+    this.$router.push({path:`/day/${dateToString(this.day.fullDate)}`})
   }
 
   get selected(): boolean {
@@ -102,7 +114,7 @@ export default class DayComponent extends Vue {
   }
 
   getId(): string {
-    return `${dayToString(this.day.fullDate)}`;
+    return `${dateToString(this.day.fullDate)}`;
   }
 
   get markerColor(): string {

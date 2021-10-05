@@ -6,7 +6,7 @@
       @click.self="selectWeek"
 
       :style="{
-        '--dynamic-color': weekWrapperColor
+        '--dynamic-color': backgroundColor
       }"
   >
     <div class="header"></div>
@@ -46,10 +46,10 @@
 import {Options, Vue} from 'vue-class-component';
 import {WeekInfo} from "@/logic/calendar/types";
 import DayComponent from "@/views/calendar-component/week-component/day-component/day.vue";
-import {dayToString} from "@/logic/calendar/utils";
-import {Prop, Inject, InjectReactive, Emit} from "vue-property-decorator";
-import {Entity} from "@/logic/services/entity-selector/types";
-import {EntitySelectorService} from "@/logic";
+import {dateToString} from "@/logic/calendar/utils";
+import {Prop, Inject, InjectReactive, Emit, Watch} from "vue-property-decorator";
+import {WeekEntity} from "@/logic/services/entity-selector/types";
+import {EntitySelectorService, WeekConfig, WeekService} from "@/logic";
 import {hslConfig, hslConfigToBackgroundOption} from "@/shared";
 
 
@@ -62,15 +62,34 @@ export default class WeekComponent extends Vue {
   @Prop(Object) week!: WeekInfo;
   @Prop(Number) index!: number;
 
-  private entity: Entity = {type: 'week', id: this.getId(), index: this.index};
+  private entity: WeekEntity = {type: 'week', id: this.getId(), index: this.index, from: this.week[0].fullDate, to: this.week[6].fullDate};
 
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
+  @Inject('weekConfigService') readonly weekConfigService!: WeekService;
+
   @InjectReactive('color') readonly color!: hslConfig;
 
-  @Emit('Selected')
+  config?: WeekConfig;
+  defaultColor!: string;
+
+  created(): void {
+    this.config = this.weekConfigService.get(this.entity.from, this.entity.to);
+    this.defaultColor = this.config ? hslConfigToBackgroundOption(this.config.color) : 'var(--light-gray)';
+
+    this.$router.isReady().then(_ => this.routeUpdate());
+  }
+
+  @Watch('$route')
+  routeUpdate(): void {
+    if (this.$route.params.dateRange == this.getId() ?? !this.entitySelectorService.isSelected(this.entity)) {
+      this.selectWeek();
+    }
+  }
+
+  @Emit('onSelected')
   selectWeek(): void {
-    this.entitySelectorService.select(this.entity);
-    this.$router.push({path: `/week/${dayToString(this.week[0].fullDate)}-${dayToString(this.week[6].fullDate)}`})
+    this.entitySelectorService.select(this.entity)
+    this.$router.push({path: `/week/${dateToString(this.week[0].fullDate)}-${dateToString(this.week[6].fullDate)}`, query: {direction: this.index === 0 ? 'right' : 'left'}})
   }
 
   get selected(): boolean {
@@ -78,11 +97,12 @@ export default class WeekComponent extends Vue {
   }
 
   getId(): string {
-    return `${dayToString(this.week[0].fullDate)}-${dayToString(this.week[6].fullDate)}`;
+    return `${dateToString(this.week[0].fullDate)}-${dateToString(this.week[6].fullDate)}`;
   }
 
-  get weekWrapperColor(): string {
-    return this.selected ? hslConfigToBackgroundOption(this.color) : 'var(--light-gray)';
+  get backgroundColor(): string {
+    return this.selected ? hslConfigToBackgroundOption(this.color) : this.defaultColor;
   }
+
 }
 </script>

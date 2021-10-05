@@ -1,6 +1,6 @@
 <template>
   <div class="root-wrapper">
-    <div class="input" v-if="type === 'password' || type === 'text'" :data-style="style_">
+    <div class="input" v-if="type === 'password' || type === 'text'" :data-style="style_" :data-is-valid="isValid">
       <span class="title" v-if="label">{{label}}</span>
       <input
           :value="modelValue"
@@ -96,6 +96,10 @@
       text-align: center;
     }
 
+    &[data-is-valid=false] {
+      outline: 2px solid var(--invalid-red);
+    }
+
     input {
       font-size: 30px;
       width: 100%;
@@ -157,6 +161,25 @@
     background-color: #785FF7;;
   }
 
+  .input[data-is-valid=false] {
+    input {
+      color: var(--invalid-red);
+    }
+    
+    .line {
+      background-color: var(--invalid-red);
+    }
+
+    .toggle-showing {
+      background-color: var(--invalid-red);
+    }
+
+    &[data-togled=true] {
+      background-color: transparent;
+      outline: 2px solid var(--invalid-red);
+    }
+  }
+
   .toggle-showing {
     width: 10px;
     height: 10px;
@@ -175,7 +198,6 @@
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
 import {Prop} from 'vue-property-decorator';
-import placeholder from "lodash/fp/placeholder";
 
 
 @Options({})
@@ -185,6 +207,7 @@ export default class InputComponent extends Vue {
   @Prop(String) style_: 'rounded' | 'monolith' = 'rounded';
   @Prop(String) label = '';
   @Prop(String) placeholder?: string;
+  @Prop(Boolean) isValid = true;
 
   forceTextType = false;
 }
