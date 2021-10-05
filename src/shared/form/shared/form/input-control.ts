@@ -10,7 +10,7 @@ export class InputControl<T> {
         private readonly validators: CallableFunction[] = [],
     ) {
         this.currentValue = initialValue;
-        this.onValueChanged();
+        this.calculateValidity();
     }
 
     get value(): T {

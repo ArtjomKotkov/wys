@@ -20,9 +20,7 @@
   font-family: 'Roboto', sans-serif;
 
   background-color: var(--dark-gray);
-
   height: 100%;
-  width: 100%;
   padding: 40px;
 }
 </style>

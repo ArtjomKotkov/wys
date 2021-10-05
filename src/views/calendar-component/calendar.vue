@@ -129,7 +129,7 @@ export default class CalendarComponent extends Vue {
     form = new Form({
       secretKey: new InputControl<string>('', [required]),
       color: new InputControl<hslConfig>([256, 65]),
-    })
+    });
 
     @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
     @ProvideReactive('color') color: hslConfig = this.defaultColorValue;
@@ -137,7 +137,7 @@ export default class CalendarComponent extends Vue {
     @Inject('weekConfigService') readonly weekConfigService!: WeekService;
 
 
-    @Watch('form', { immediate: true, deep: true })
+    @Watch('form.value', { immediate: true, deep: true })
     formChanged(): void {
       this.color = this.form.controls.color.value;
     }
