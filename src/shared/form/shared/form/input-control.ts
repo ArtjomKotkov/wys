@@ -23,7 +23,7 @@ export class InputControl<T> {
     }
 
     reset(value?: T): void {
-        this.initialValue = value ? value : this.initialValue;
+        this.initialValue = value !== undefined ? value : this.initialValue;
         this.currentValue = this.initialValue;
 
         this.onValueChanged();

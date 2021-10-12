@@ -1,5 +1,12 @@
 <template>
   <div class="calendar-wrapper" @click.self="resetSelection">
+    <div class="menu-icon">
+      <router-link :to="{ name: 'settings'}">
+        <icon-component
+            name="menu"
+        ></icon-component>
+      </router-link>
+    </div>
     <year-month-selector v-model="selectedDate"></year-month-selector>
     <div class="calendar">
       <week-component
@@ -13,6 +20,12 @@
       ></week-component>
     </div>
     <div class="week-key-input">
+      <div class="jira-sync-icon">
+        <icon-component
+            v-if="showWeekKeyInput && !form.dirty && form.isValid"
+            name="jira"
+        ></icon-component>
+      </div>
       <input-component
           v-if="showWeekKeyInput"
 
@@ -41,14 +54,20 @@
 </template>
 
 <style lang="scss">
+
+  .jira-sync-icon {
+    min-width: 45px;
+  }
+
   @media (max-width: 1366px) {
     .calendar-wrapper {
       width: 100%;
     }
   }
 
-
   .calendar-wrapper {
+    position: relative;
+
     z-index: 1;
 
     display: flex;
@@ -67,6 +86,12 @@
     gap: 20px;
   }
 
+  .menu-icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
   .calendar {
     margin-top: 20px;
 
@@ -81,17 +106,16 @@
   .week-key-input {
     min-height: 60px;
 
-    width: 85%;
     margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    gap: 20px;
 
     & .secret-key-input {
-      margin-right: 15px;
       flex-grow: 1;
     }
-
   }
 
   .week-actions {
@@ -139,6 +163,7 @@ import {EntitySelectorService, stringToDate, WeekService} from "@/logic";
 import {Form, hslConfig, InputControl, required} from "@/shared/form";
 import YearMonthSelector from "./year-month-selector-component/year-month-selector.vue";
 import {WeekEntity} from "@/logic/services/entity-selector/types";
+import IconComponent from "@/shared/icons/icon.vue";
 
 
 @Options({
@@ -147,6 +172,7 @@ import {WeekEntity} from "@/logic/services/entity-selector/types";
     InputComponent,
     YearMonthSelector,
     ColorPickerComponent: HslColorPickerComponent,
+    IconComponent,
   }
 })
 export default class CalendarComponent extends Vue {

@@ -18,6 +18,7 @@
   --third-color: #7263BD;
 
   --invalid-red: #F75F68;
+  --invalid-red-dark: #d03841;
 
   font-family: 'Roboto', sans-serif;
 
@@ -37,6 +38,18 @@
   @media (max-width: 1366px) {
     .app-wrapper {
       overflow: auto;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--light-gray);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--main-color);
+      }
     }
   }
 }

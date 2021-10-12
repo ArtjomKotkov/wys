@@ -63,9 +63,20 @@
 
     overflow: auto;
     height: 100%;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--light-gray);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--main-color);
+    }
+
   }
-
-
 
   .form-buttons {
     min-height: 40px;
