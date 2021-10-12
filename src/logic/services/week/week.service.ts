@@ -1,4 +1,4 @@
-import {LocalStorageService} from "@/logic/services/storages";
+import {LocalStorageKeyValueService} from "@/logic/services/storages";
 import {WeekConfig} from "@/logic/services/week/types";
 import {dateToString, stringToDate} from "@/logic";
 import {AbstractKeyValueStorage} from "@/logic/services/storages/abstract-storage.service";
@@ -6,7 +6,7 @@ import {AbstractKeyValueStorage} from "@/logic/services/storages/abstract-storag
 
 export class WeekService {
 
-    store: AbstractKeyValueStorage<Record<string, any>> = new LocalStorageService('week-configs');
+    store: AbstractKeyValueStorage<Record<string, any>> = new LocalStorageKeyValueService('week-configs');
 
     set(week: WeekConfig): void {
         const key = this.makeKey(week.from, week.to);

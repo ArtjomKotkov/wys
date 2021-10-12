@@ -12,8 +12,10 @@
           @onSelected="resetConfigInputs($event)"
       ></week-component>
     </div>
-    <div class="week-key-input" v-if="showWeekKeyInput">
+    <div class="week-key-input">
       <input-component
+          v-if="showWeekKeyInput"
+
           class="secret-key-input"
           v-model="form.controls.secretKey.value"
           type="password"
@@ -23,7 +25,12 @@
 
           :is-valid="form.controls.secretKey.isValid"
       ></input-component>
-      <color-picker-component v-model="form.controls.color.value" :lightness="70"></color-picker-component>
+      <color-picker-component
+          v-if="showWeekKeyInput"
+
+          v-model="form.controls.color.value"
+          :lightness="70"
+      ></color-picker-component>
     </div>
     <div class="week-actions" v-if="form.dirty">
       <button class="cancel-button" @click="resetConfigInputs">Отменить</button>
@@ -34,9 +41,30 @@
 </template>
 
 <style lang="scss">
+  @media (max-width: 1366px) {
+    .calendar-wrapper {
+      width: 100%;
+    }
+  }
+
+
   .calendar-wrapper {
-    display: inline-block;
-    width: 660px;
+    z-index: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    padding: 0 40px;
+
+    height: 100%;
+
+    -webkit-box-shadow: 10px 0px 90px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 10px 0px 90px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 10px 0px 90px 0px rgba(0, 0, 0, 0.3);
+
+    gap: 20px;
   }
 
   .calendar {
@@ -51,8 +79,9 @@
   }
 
   .week-key-input {
+    min-height: 60px;
+
     width: 85%;
-    margin-left: 7.5%;
     margin-top: 20px;
     display: flex;
     flex-direction: row;
@@ -136,8 +165,7 @@ export default class CalendarComponent extends Vue {
 
     @Inject('weekConfigService') readonly weekConfigService!: WeekService;
 
-
-    @Watch('form.value', { immediate: true, deep: true })
+    @Watch('form', { immediate: true, deep: true })
     formChanged(): void {
       this.color = this.form.controls.color.value;
     }

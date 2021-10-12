@@ -73,10 +73,8 @@ export default class WeekComponent extends Vue {
   defaultColor!: string;
 
   created(): void {
-    this.config = this.weekConfigService.get(this.entity.from, this.entity.to);
-    this.defaultColor = this.config ? hslConfigToBackgroundOption(this.config.color) : 'var(--light-gray)';
-
     this.$router.isReady().then(_ => this.routeUpdate());
+    this.update();
   }
 
   @Watch('$route')
@@ -90,6 +88,12 @@ export default class WeekComponent extends Vue {
   selectWeek(): void {
     this.entitySelectorService.select(this.entity)
     this.$router.push({path: `/week/${dateToString(this.week[0].fullDate)}-${dateToString(this.week[6].fullDate)}`, query: {direction: this.index === 0 ? 'right' : 'left'}})
+  }
+
+  @Watch('entitySelectorService', {deep: true})
+  update(): void {
+    this.config = this.weekConfigService.get(this.entity.from, this.entity.to);
+    this.defaultColor = this.config ? hslConfigToBackgroundOption(this.config.color) : 'var(--light-gray)'
   }
 
   get selected(): boolean {

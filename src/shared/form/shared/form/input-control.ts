@@ -31,6 +31,14 @@ export class InputControl<T> {
         this.isDirty = false;
     }
 
+    forceValidity(): void {
+        this.isValid = true;
+    }
+
+    forceUntouched(): void {
+        this.isDirty = false;
+    }
+
     private onValueChanged(): void {
         this.calculateValidity();
 

@@ -1,6 +1,6 @@
 import {AbstractKeyValueStorage} from "./abstract-storage.service";
 
-export class LocalStorageService implements AbstractKeyValueStorage<Record<string, any>> {
+export class LocalStorageKeyValueService implements AbstractKeyValueStorage<Record<string, any>> {
 
     constructor(private keyGroup: string) {
     }

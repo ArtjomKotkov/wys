@@ -12,7 +12,6 @@ export class Form {
     }
 
     get dirty(): boolean {
-        console.log(this.controls_)
         return Object.values(this.controls_)
             .map(control => control.isDirty)
             .reduce((value1, value2) => value1 || value2);
@@ -34,5 +33,27 @@ export class Form {
             output[name] = control.value;
         }
         return output;
+    }
+
+    add(name: string, control: InputControl<any>): void {
+        if (name in this.controls_) {
+            throw new Error('Control with such a name already exist.');
+        }
+        this.controls_[name] = control;
+    }
+
+    remove(name: string): void {
+        if (!(name in this.controls_)) {
+            throw new Error('Control with such a name doesn\'t exist.');
+        }
+        delete this.controls_[name];
+    }
+
+    forceValidity(): void {
+        Object.values(this.controls_).forEach(control => control.forceValidity());
+    }
+
+    forceUntouched(): void {
+        Object.values(this.controls_).forEach(control => control.forceUntouched());
     }
 }

@@ -5,3 +5,11 @@ export interface AbstractKeyValueStorage<T> {
 
     delete(key: string): void;
 }
+
+export interface AbstractStorage<T> {
+    set(value: T): void;
+
+    get(): T | undefined;
+
+    delete(): void;
+}

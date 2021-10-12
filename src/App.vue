@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div class="app-wrapper">
     <calendar-component></calendar-component>
     <main-component></main-component>
+
+    <icons-definition-component></icons-definition-component>
   </div>
 </template>
 
@@ -21,7 +23,22 @@
 
   background-color: var(--dark-gray);
   height: 100%;
-  padding: 40px;
+
+  .app-wrapper {
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    overflow: hidden;
+  }
+
+  @media (max-width: 1366px) {
+    .app-wrapper {
+      overflow: auto;
+    }
+  }
 }
 </style>
 
@@ -31,12 +48,14 @@ import {Provide} from "vue-property-decorator";
 import {WeekService} from "@/logic";
 import MainComponent from "@/views/main-component/main.vue";
 import CalendarComponent from "@/views/calendar-component/calendar.vue";
+import IconsDefinitionComponent from "@/shared/icons/icons-definition.vue";
 
 
 @Options({
   components: {
     CalendarComponent,
-    MainComponent
+    MainComponent,
+    IconsDefinitionComponent
   }
 })
 export default class App extends Vue {

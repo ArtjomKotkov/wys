@@ -1,6 +1,9 @@
 <template>
-  <div class="root-wrapper">
-    <div class="color-picker" :style="{
+  <div class="root-wrapper" v-click-outside="hide">
+    <div
+      class="color-picker"
+
+      :style="{
         'background-color': `${makeHslByHueAndLightness(form.controls.hue.value, form.controls.lightness.value)}`
       }"
       @click="showed = !showed">
@@ -43,6 +46,7 @@
     }
 
     & .hsl-picker {
+      z-index: 999;
       position: absolute;
       left: -190px;
       top: -125px;
@@ -59,11 +63,15 @@
 import {Options, Vue} from 'vue-class-component';
 import {Prop, Watch} from 'vue-property-decorator';
 import ColorSliderComponent from "@/shared/form/shared/slider.vue";
-import {Form, InputControl} from "@/shared";
+import {clickOutside, Form, InputControl} from "@/shared";
+
 
 
 @Options({
-  components: {SliderComponent: ColorSliderComponent}
+  components: {SliderComponent: ColorSliderComponent},
+  directives: {
+    clickOutside
+  }
 })
 export default class HslColorPickerComponent extends Vue {
   @Prop() modelValue!: number[];
@@ -86,7 +94,7 @@ export default class HslColorPickerComponent extends Vue {
     this.form.controls.lightness.reset(this.modelValue[1]);
   }
 
-  @Watch('form.value', { immediate: true, deep: true })
+  @Watch('form', { immediate: true, deep: true })
   updateModelValue(): void {
     if (this.form.controls.hue.value === this.modelValue[0] && this.form.controls.lightness.value === this.modelValue[1]) {
       return;
@@ -108,6 +116,12 @@ export default class HslColorPickerComponent extends Vue {
       hslGradients.push(`hsla(${this.form.controls.hue.value}, 100%, ${i}%, 1)`)
     }
     return `-webkit-linear-gradient(left, ${hslGradients.join(',')})`
+  }
+
+  private hide(): void {
+    if (this.showed) {
+      this.showed = false;
+    }
   }
 
   makeHslByHue(hue: number): string {
