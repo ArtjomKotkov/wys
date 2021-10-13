@@ -1,6 +1,6 @@
 <template>
   <div class="root-wrapper">
-    <div class="input" v-if="type === 'password' || type === 'text'" :data-style="style_" :data-is-valid="isValid">
+    <div class="input" :data-style="style_" :data-is-valid="isValid">
       <span class="title" v-if="label">{{label}}</span>
       <input
           :value="modelValue"
@@ -8,6 +8,10 @@
           :type="!forceTextType ? type : 'text'"
           :data-type="type"
           :placeholder="placeholder"
+          :min="min"
+          :max="max"
+
+          :style="{'text-align': align}"
       >
       <div>
         <div
@@ -30,9 +34,7 @@
   }
 
   .input[data-style="monolith"] {
-    margin-top: 21px;
     height: 60px;
-    width: 400px;
     background-color: var(--medium-gray);
     outline: none;
     border: none;
@@ -144,6 +146,16 @@
       line-height: 60px;
     }
 
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &[type=number] {
+      -moz-appearance: textfield;
+    }
+
   }
 
   input[data-type='password'] {
@@ -203,11 +215,14 @@ import {Prop} from 'vue-property-decorator';
 @Options({})
 export default class InputComponent extends Vue {
   @Prop(String) modelValue!: string;
-  @Prop(String) type!: 'text' | 'password';
+  @Prop(String) type!: 'text' | 'password' | 'number';
   @Prop(String) style_: 'rounded' | 'monolith' = 'rounded';
   @Prop(String) label = '';
   @Prop(String) placeholder?: string;
   @Prop(Boolean) isValid = true;
+  @Prop(Number) min?: number;
+  @Prop(Number) max?: number;
+  @Prop(String) align: 'center' | 'left' | 'right' = 'left';
 
   forceTextType = false;
 }

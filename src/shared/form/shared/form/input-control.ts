@@ -42,7 +42,7 @@ export class InputControl<T> {
     private onValueChanged(): void {
         this.calculateValidity();
 
-        this.isDirty = true;
+        this.isDirty = this.currentValue !== this.initialValue;
     }
 
     private calculateValidity(): void {

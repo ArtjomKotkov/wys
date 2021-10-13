@@ -1,27 +1,51 @@
 <template>
   <div class="task-type-component">
-      <div class="task-type-title">Типы записей в отчете</div>
+      <div class="task-type-title">Предустановленные временные интервалы</div>
       <div v-for="(form, index) in forms" :key="index" class="type-selectors">
         <input-component
-            class="task-name-input"
+            class="number-input"
 
-            v-model="form.controls.name.value"
-            type="text"
-            style_="rounded"
-            :placeholder="'Тип задачи'"
+            v-model="form.controls.hour.value"
+            type="number"
+            style_="monolith"
+            placeholder="часы"
 
-            :is-valid="form.controls.name.isValid"
+            :min="0"
+            :max="24"
+
+            :align="'center'"
+
+            :is-valid="form.controls.hour.isValid"
         ></input-component>
-        <color-picker-component v-model="form.controls.color.value" :lightness="70"></color-picker-component>
-        <div class="icon-wrap-block">
-          <icon-component @click="remove(index)" name="cross" v-if="form.controls.removable.value"></icon-component>
-        </div>
+        <input-component
+            class="number-input"
+
+            v-model="form.controls.minute.value"
+            type="number"
+            style_="monolith"
+            placeholder="минуты"
+
+            :min="0"
+            :max="60"
+
+            :align="'center'"
+
+            :is-valid="form.controls.minute.isValid"
+        ></input-component>
+        <icon-component @click="remove(index)" name="cross"></icon-component>
       </div>
-      <icon-component @click="add()" name="plus"></icon-component>
+      <icon-component @click="add()" v-if="forms.length < limit" name="plus"></icon-component>
   </div>
 </template>
 
 <style lang="scss">
+  .number-input {
+
+    & input {
+      width: 70px !important;
+    }
+  }
+
   .task-type-component {
     display: flex;
     flex-direction: column;
@@ -48,17 +72,12 @@
     width: 100%;
     color: var(--light-gray);
   }
-
-  .icon-wrap-block {
-    min-width: 45px;
-  }
 </style>
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
-import {Form, hslConfig, InputControl, required} from "@/shared";
+import {Form, InputControl, required} from "@/shared";
 import InputComponent from "@/shared/form/input.vue";
-import HslColorPickerComponent from "@/shared/form/color-picker.vue";
 import IconComponent from "@/shared/icons/icon.vue";
 import IconsDefinitionComponent from "@/shared/icons/icons-definition.vue";
 import {Emit, Prop, Watch} from "vue-property-decorator";
@@ -67,15 +86,15 @@ import {Emit, Prop, Watch} from "vue-property-decorator";
 @Options({
   components: {
     InputComponent,
-    ColorPickerComponent: HslColorPickerComponent,
     IconsDefinitionComponent,
     IconComponent,
   }
 })
-export default class TaskTypeComponent extends Vue {
+export default class TimeRangeComponent extends Vue {
   @Prop() modelValue!: Record<string, any>[];
 
   forms: Form[] = [];
+  limit = 4;
 
   @Watch('forms', {deep: true})
   onFormsUpdate(): void {
@@ -83,15 +102,15 @@ export default class TaskTypeComponent extends Vue {
   }
 
   created(): void {
-    this.modelValue.forEach(item => this.add(item.name, item.color, item.removable));
+    this.modelValue.forEach(value => this.add(value.hour, value.minute));
+
     this.resetForm();
   }
 
-  add(name = '', color: hslConfig = [180, 50], removable = true): void {
+  add(hour = 0, minute = 0): void {
     const form = new Form({
-      name: new InputControl<string>(name, [required, this.uniqueValidator]),
-      color: new InputControl<hslConfig>(color),
-      removable: new InputControl<boolean>(removable),
+      hour: new InputControl<number>(hour, [required]),
+      minute: new InputControl<number>(minute, [required]),
     });
 
     this.forms.push(form);
@@ -99,10 +118,6 @@ export default class TaskTypeComponent extends Vue {
 
   remove(index: number): void {
     this.forms.splice(index, 1);
-  }
-
-  uniqueValidator(value: string): boolean {
-    return Object.values(this.forms).map(form => form.values).filter(values => values.name === value).length === 1;
   }
 
   @Emit('reset')

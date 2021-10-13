@@ -1,1 +1,1 @@
-export * from './task-types';
+export * from './default-configs-values';

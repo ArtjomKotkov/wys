@@ -1,6 +1,5 @@
 <template>
   <div class="report-redactor-wrapper">
-
   </div>
 </template>
 
@@ -41,11 +40,15 @@
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
 import TextareaComponent from "@/shared/form/textarea.vue";
+import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
+import TimeRangeInput from "@/shared/form/time-range-input.vue";
 
 
 @Options({
   components: {
     TextareaComponent,
+    TimeRangeComponent,
+    TimeRangeInput,
   }
 })
 export default class ReportRedactorComponent extends Vue {
