@@ -42,6 +42,8 @@ import {Options, Vue} from 'vue-class-component';
 import TextareaComponent from "@/shared/form/textarea.vue";
 import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
 import TimeRangeInput from "@/shared/form/time-range-input.vue";
+import SelectComponent from "@/shared/form/selector.vue";
+import {SelectItem} from "@/shared";
 
 
 @Options({
@@ -49,6 +51,7 @@ import TimeRangeInput from "@/shared/form/time-range-input.vue";
     TextareaComponent,
     TimeRangeComponent,
     TimeRangeInput,
+    SelectComponent,
   }
 })
 export default class ReportRedactorComponent extends Vue {

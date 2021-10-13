@@ -4,7 +4,7 @@ export interface mainConfig {
     hoursPerDay: number;
     taskTypes: taskType[];
     timeRange: timeRange[];
-};
+}
 
 export interface taskType {
     name: string;
