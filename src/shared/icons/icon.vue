@@ -25,6 +25,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    min-height: 45px;
+    min-width: 45px;
+
+    max-height: 45px;
+    max-width: 45px;
   }
 
   .icon-wrapper:hover {

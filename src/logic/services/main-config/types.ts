@@ -3,7 +3,7 @@ import {hslConfig} from "@/shared";
 export interface mainConfig {
     hoursPerDay: number;
     taskTypes: taskType[];
-    timeRange: timeRange[];
+    timeRange: TimeRange[];
 }
 
 export interface taskType {
@@ -12,7 +12,7 @@ export interface taskType {
     removable: boolean;
 }
 
-export interface timeRange {
+export interface TimeRange {
     hour: string;
     minute: string;
 }

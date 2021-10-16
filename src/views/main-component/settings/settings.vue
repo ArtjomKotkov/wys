@@ -57,7 +57,7 @@
 
   }
 
-  @media (max-width: 1366px) {
+  @media (max-width: 1610px) {
     .settings-wrapper {
       overflow: visible !important;
     }

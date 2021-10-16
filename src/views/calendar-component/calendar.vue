@@ -59,7 +59,7 @@
     min-width: 45px;
   }
 
-  @media (max-width: 1366px) {
+  @media (max-width: 1610px) {
     .calendar-wrapper {
       width: 100%;
     }
@@ -186,10 +186,10 @@ export default class CalendarComponent extends Vue {
       color: new InputControl<hslConfig>([256, 65]),
     });
 
-    @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
     @ProvideReactive('color') color: hslConfig = this.defaultColorValue;
 
     @Inject('weekConfigService') readonly weekConfigService!: WeekService;
+    @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
 
     @Watch('form', { immediate: true, deep: true })
     formChanged(): void {

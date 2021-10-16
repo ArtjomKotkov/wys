@@ -1,12 +1,109 @@
 <template>
   <div class="report-redactor-wrapper">
+    <div class="main-selectors">
+      <select-component
+          class="project-selector"
+
+          v-model="form.controls.project.value"
+          label="Проект"
+
+          :items="mockProjects"
+      >
+      </select-component>
+      <select-component
+          class="project-selector"
+
+          v-model="form.controls.subProject.value"
+          label="Под проект"
+
+          :items="mockProjects"
+      >
+      </select-component>
+      <div class="buttons-block">
+        <icon-component
+            class="jira-icon"
+            name="jira"
+        ></icon-component>
+        <button
+            class="save-button"
+            @click="handleSave"
+
+            :disabled="!form.controls.planData.isValid && !form.controls.reportData.isValid"
+        >
+          <span v-if="!(form.controls.reportData.isValid && !form.controls.planData.isValid) && !(form.controls.planData.isValid && !form.controls.reportData.isValid)">Сохранить</span>
+          <span v-if="form.controls.reportData.isValid && !form.controls.planData.isValid">Заполнить план</span>
+          <span v-if="form.controls.planData.isValid && !form.controls.reportData.isValid">Заполнить отчет</span>
+        </button>
+      </div>
+    </div>
+    <div class="nav">
+      <div
+          v-for="item in navSelectionItems" :key="item.key"
+
+          :data-selected="selectedNav.key === item.key"
+          @click="selectedNav = item"
+      >
+        {{item.title}}
+      </div>
+    </div>
+    <report-form
+        v-show="selectedNav.key === 'report'"
+
+        v-model="form.controls.reportData.value"
+
+        @validityChange="reportIsValid = $event"
+    ></report-form>
+    <plan-redactor
+        v-show="selectedNav.key === 'plan'"
+
+        v-model="form.controls.planData.value"
+
+        @validityChange="planIsValid = $event"
+    ></plan-redactor>
   </div>
 </template>
 
 <style lang="scss">
-  @media (max-width: 1366px) {
+  @media (max-width: 1610px) {
     .report-redactor-wrapper {
       overflow: visible !important;
+    }
+  }
+
+  .save-button:disabled {
+    background-color: var(--medium-gray);
+    color: #525252;
+    cursor: default;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+
+    border-bottom: 2px solid var(--medium-gray);
+
+    cursor: pointer;
+
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+
+    margin: 40px 0;
+
+    div {
+      width: 200px;
+      color: var(--light-gray);
+
+      &:hover[data-selected=false] {
+        background-color: var(--medium-gray);
+        color: white;
+      }
+
+      &[data-selected=true] {
+        color: white;
+        border-bottom: 2px solid white;
+      }
     }
   }
 
@@ -33,7 +130,31 @@
   }
 
   .report-redactor-wrapper {
-    padding: 20px;
+    padding: 40px;
+  }
+
+  .main-selectors {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 50px;
+
+    flex-wrap: wrap;
+
+    .project-selector {
+      flex-grow: 1;
+    }
+
+    .buttons-block {
+      display: flex;
+      flex-direction: row;
+
+      align-items: center;
+      gap: 50px;
+    }
   }
 </style>
 
@@ -43,7 +164,12 @@ import TextareaComponent from "@/shared/form/textarea.vue";
 import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
 import TimeRangeInput from "@/shared/form/time-range-input.vue";
 import SelectComponent from "@/shared/form/selector.vue";
-import {SelectItem} from "@/shared";
+import {Form, InputControl, SelectItem} from "@/shared";
+import IconComponent from "@/shared/icons/icon.vue";
+import ReportForm from "@/views/main-component/report-redactor-component/report-form.vue";
+import PlanRedactor from "@/views/main-component/report-redactor-component/plan-redactor.vue";
+import {Inject, Watch} from "vue-property-decorator";
+import {EntitySelectorService} from "@/logic";
 
 
 @Options({
@@ -52,8 +178,47 @@ import {SelectItem} from "@/shared";
     TimeRangeComponent,
     TimeRangeInput,
     SelectComponent,
+    IconComponent,
+    ReportForm,
+    PlanRedactor,
   }
 })
 export default class ReportRedactorComponent extends Vue {
+  @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
+
+  mockProjects: SelectItem[] = [
+    {key: '1', title: 'проект 1'},
+    {key: '2', title: 'проект 2'}
+  ];
+
+  form = new Form({
+    project: new InputControl<SelectItem>(this.mockProjects[0]),
+    subProject: new InputControl<SelectItem>(this.mockProjects[0]),
+    reportData: new InputControl<string>('', [(_: any) => this.reportIsValid]),
+    planData: new InputControl<string>('', [(_: any) => this.planIsValid]),
+  });
+
+  reportIsValid = false;
+  planIsValid = false;
+
+  navSelectionItems: SelectItem[] = [
+    {key: 'report', title: 'Отчет'},
+    {key: 'plan', title: 'План'}
+  ];
+
+  selectedNav = this.navSelectionItems[0];
+
+  handleSave(): void {
+    if (this.form.controls.reportData.isValid && !this.form.controls.planData.isValid) {
+      this.selectedNav = this.navSelectionItems[1];
+    } else if (this.form.controls.planData.isValid && !this.form.controls.reportData.isValid) {
+      this.selectedNav = this.navSelectionItems[0];
+    }
+  }
+
+  @Watch('entitySelectorService', {deep: true})
+  update(): void {
+    this.form.reset();
+  }
 }
 </script>

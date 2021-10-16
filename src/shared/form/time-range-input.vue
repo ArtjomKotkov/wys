@@ -130,8 +130,9 @@
       flex-grow: 1;
 
       display: flex;
-      flex-wrap: wrap;
       flex-direction: row;
+
+      flex-wrap: wrap;
       justify-content: center;
       align-items: center;
 
@@ -170,7 +171,7 @@ import {Options, Vue} from 'vue-class-component';
 import {Inject, Prop, Watch} from 'vue-property-decorator';
 import {clickOutside, Form, InputControl, inRange, required} from "@/shared";
 import {MainConfigService} from "@/logic/services/main-config/main-config-service";
-import {timeRange} from "@/logic/services/main-config";
+import {TimeRange} from "@/logic/services/main-config";
 import InputComponent from "@/shared/form/input.vue";
 
 
@@ -183,7 +184,7 @@ import InputComponent from "@/shared/form/input.vue";
   }
 })
 export default class TimeRangeInput extends Vue {
-  @Prop(String) modelValue!: timeRange;
+  @Prop(String) modelValue!: TimeRange;
 
   @Prop(String) label = '';
   @Prop(String) placeholder?: string;
@@ -197,7 +198,7 @@ export default class TimeRangeInput extends Vue {
     minute: new InputControl<number>(0, [required]),
   });
 
-  defaultDateRanges?: timeRange[];
+  defaultDateRanges?: TimeRange[];
 
   showed = false;
 
@@ -240,7 +241,7 @@ export default class TimeRangeInput extends Vue {
     }
   }
 
-  selectDefaultRange(dateRange: timeRange): void {
+  selectDefaultRange(dateRange: TimeRange): void {
     this.form.reset(dateRange);
     this.hide();
   }

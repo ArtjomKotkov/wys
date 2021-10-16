@@ -1,5 +1,5 @@
 <template>
-  <div class="root-wrapper">
+  <div class="textarea-wrapper">
     <div class="textarea" :data-style="style_" :data-is-valid="isValid">
       <span class="title" v-if="label">{{label}}</span>
       <textarea
@@ -16,12 +16,11 @@
 
 <style lang="scss">
 
-.root-wrapper {
+.textarea-wrapper {
   padding: 0 0;
 }
 
 .textarea[data-style="monolith"] {
-  margin-top: 21px;
   width: 400px;
   background-color: var(--medium-gray);
   outline: none;

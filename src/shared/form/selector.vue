@@ -108,6 +108,8 @@
       width: 100%;
       background-color: var(--medium-gray);
 
+      z-index: 9999;
+
       .option {
         display: flex;
         flex-direction: row;
@@ -156,7 +158,6 @@ import {clickOutside, hslConfig, hslConfigToBackgroundOption, SelectItem} from "
 })
 export default class SelectComponent extends Vue {
   @Prop() modelValue!: SelectItem;
-  @Prop(String) style_: 'rounded' | 'monolith' = 'rounded';
   @Prop(String) label = '';
   @Prop() items: SelectItem[] = [];
 

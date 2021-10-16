@@ -21,9 +21,13 @@ export class Form {
         return this.controls_;
     }
 
-    reset(values: Record<string, any>): void {
-        for (const [control, value] of Object.entries(values)) {
-            this.controls_[control].reset(value);
+    reset(values?: Record<string, any>): void {
+        if (values) {
+            for (const [control, value] of Object.entries(values)) {
+                this.controls_[control].reset(value);
+            }
+        } else {
+            Object.values(this.controls_).forEach(control => control.reset());
         }
     }
 

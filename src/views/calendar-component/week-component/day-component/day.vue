@@ -75,10 +75,9 @@
 import {Options, Vue} from 'vue-class-component';
 import {Inject, Prop, Watch} from "vue-property-decorator";
 import {DayInfo} from "@/logic/calendar/types";
-import {dateToString, isEqualDay, stringToDate} from "@/logic/calendar/utils";
+import {dateToString} from "@/logic/calendar/utils";
 import {EntitySelectorService} from "@/logic";
 import {Entity} from "@/logic/services/entity-selector/types";
-import {hslConfigToBackgroundOption} from "@/shared";
 
 
 @Options({})

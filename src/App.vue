@@ -35,7 +35,7 @@
     overflow: hidden;
   }
 
-  @media (max-width: 1366px) {
+  @media (max-width: 1610px) {
     .app-wrapper {
       overflow: auto;
 
@@ -57,8 +57,8 @@
 
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
-import {Inject, Provide} from "vue-property-decorator";
-import {WeekService} from "@/logic";
+import {Provide} from "vue-property-decorator";
+import {EntitySelectorService, WeekService} from "@/logic";
 import MainComponent from "@/views/main-component/main.vue";
 import CalendarComponent from "@/views/calendar-component/calendar.vue";
 import IconsDefinitionComponent from "@/shared/icons/icons-definition.vue";
@@ -75,6 +75,7 @@ import {MainConfigService} from "@/logic/services/main-config/main-config-servic
 export default class App extends Vue {
   @Provide('weekConfigService') weekConfigService: WeekService = new WeekService();
   @Provide('mainConfigService') mainConfigService: MainConfigService = new MainConfigService();
+  @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
 }
 
 

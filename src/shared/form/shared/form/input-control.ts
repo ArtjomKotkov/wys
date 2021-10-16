@@ -39,6 +39,10 @@ export class InputControl<T> {
         this.isDirty = false;
     }
 
+    setValidity(value: boolean): void {
+        this.isValid = value;
+    }
+
     private onValueChanged(): void {
         this.calculateValidity();
 
