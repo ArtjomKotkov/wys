@@ -85,7 +85,7 @@ import TimeRangeInput from "@/shared/form/time-range-input.vue";
 import SelectComponent from "@/shared/form/selector.vue";
 import {Form, InputControl, required, } from "@/shared";
 import {Inject, Prop, Watch} from "vue-property-decorator";
-import {EntitySelectorService, MainConfigService} from "@/logic";
+import {MainConfigService, Plan} from "@/logic";
 import IconComponent from "@/shared/icons/icon.vue";
 import InputComponent from "@/shared/form/input.vue";
 
@@ -101,23 +101,33 @@ import InputComponent from "@/shared/form/input.vue";
   }
 })
 export default class PlanRedactor extends Vue {
-  @Prop(String) modelValue?: string;
+  @Prop(String) modelValue?: Plan[];
 
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
-  @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
 
   forms: Form[] = [];
+
+  mounted(): void {
+    this.modelValue?.forEach(reportData => this.add(
+        reportData.name,
+        reportData.subName,
+        false,
+    ));
+  }
 
   add(
       name = '',
       subName = '',
+      emitEvent = true,
   ): void {
     const form = new Form({
       name: new InputControl<string>(name, [required]),
       subName: new InputControl<string>(subName),
     });
     this.forms.push(form);
-    this.updateModelValue();
+    if (emitEvent) {
+      this.updateModelValue();
+    }
   }
 
   remove(index: number): void {
@@ -125,15 +135,30 @@ export default class PlanRedactor extends Vue {
     this.updateModelValue();
   }
 
-  @Watch('entitySelectorService', {deep: true})
-  update(): void {
-    this.forms = [];
-  }
-
   @Watch('forms', {deep: true})
   updateModelValue(): void {
     this.$emit('validityChange', _.every(this.forms.map(form => form.isValid), Boolean) && this.forms.length > 0);
-    this.$emit('update:modelValue', 'test');
+    this.$emit('update:modelValue', this.getFormatedPlanData());
+  }
+
+  @Watch('modelValue', {deep: true})
+  onModelValueChanged(): void {
+    this.forms = [];
+    this.modelValue?.forEach(reportData => this.add(
+        reportData.name,
+        reportData.subName,
+        false,
+    ));
+  }
+
+  private getFormatedPlanData(): Plan[] {
+    return this.forms.map(form => {
+      const data = form.values;
+      return {
+        name: data.name,
+        subName: data.subName,
+      }
+    });
   }
 }
 </script>

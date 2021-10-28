@@ -120,9 +120,9 @@ import TextareaComponent from "@/shared/form/textarea.vue";
 import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
 import TimeRangeInput from "@/shared/form/time-range-input.vue";
 import SelectComponent from "@/shared/form/selector.vue";
-import {Form, hslConfigToBackgroundOption, InputControl, required, SelectItem} from "@/shared";
+import {Form, InputControl, required, SelectItem} from "@/shared";
 import {Inject, Prop, Watch} from "vue-property-decorator";
-import {EntitySelectorService, MainConfigService, TimeRange} from "@/logic";
+import {MainConfigService, Report, TimeRange} from "@/logic";
 import IconComponent from "@/shared/icons/icon.vue";
 import InputComponent from "@/shared/form/input.vue";
 import _ from "lodash";
@@ -141,10 +141,9 @@ import Textarea from "@/shared/form/textarea.vue";
   }
 })
 export default class ReportForm extends Vue {
-  @Prop(String) modelValue?: string;
+  @Prop(String) modelValue?: Report[];
 
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
-  @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
 
   forms: Form[] = [];
 
@@ -153,10 +152,18 @@ export default class ReportForm extends Vue {
 
   taskTypes: SelectItem[] = [this.blankTaskType];
 
-  created(): void {
+  mounted(): void {
     this.taskTypes = this.taskTypes.concat(this.mainConfigService.get().taskTypes.map(item => ({
       key: item.name, title: item.name, color: item.color
     })));
+    this.modelValue?.forEach(reportData => this.add(
+        this.taskTypes.find(taskType => taskType.key === reportData.taskType),
+        reportData.name,
+        reportData.subName,
+        reportData.timeRange,
+        reportData.description,
+        false,
+    ));
   }
 
   add(
@@ -165,6 +172,7 @@ export default class ReportForm extends Vue {
       subName = '',
       timeRange = this.defaultTimeRange,
       description = '',
+      emitEvent = true,
   ): void {
     const form = new Form({
       taskType: new InputControl<SelectItem>(taskType),
@@ -174,7 +182,9 @@ export default class ReportForm extends Vue {
       description: new InputControl<string>(description),
     });
     this.forms.push(form);
-    this.updateModelValue();
+    if (emitEvent) {
+      this.updateModelValue();
+    }
   }
 
   remove(index: number): void {
@@ -182,15 +192,36 @@ export default class ReportForm extends Vue {
     this.updateModelValue();
   }
 
-  @Watch('entitySelectorService', {deep: true})
-  update(): void {
-    this.forms = [];
-  }
-
   @Watch('forms', {deep: true})
   updateModelValue(): void {
     this.$emit('validityChange', _.every(this.forms.map(form => form.isValid), Boolean) && this.forms.length > 0);
-    this.$emit('update:modelValue', 'test');
+    this.$emit('update:modelValue', this.getFormatedReportData());
+  }
+
+  @Watch('modelValue', {deep: true})
+  onModelValueChanged(): void {
+    this.forms = [];
+    this.modelValue?.forEach(reportData => this.add(
+        this.taskTypes.find(taskType => taskType.key === reportData.taskType),
+        reportData.name,
+        reportData.subName,
+        reportData.timeRange,
+        reportData.description,
+        false,
+    ));
+  }
+
+  private getFormatedReportData(): Report[] {
+    return this.forms.map(form => {
+      const data = form.values;
+      return {
+        taskType: data.taskType.key,
+        name: data.name,
+        subName: data.subName,
+        timeRange: data.timeRange,
+        description: data.description,
+      }
+    });
   }
 }
 </script>

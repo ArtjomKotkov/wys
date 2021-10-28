@@ -5,7 +5,6 @@
       <textarea
           :value="modelValue"
           @input="$emit('update:modelValue', $event.target.value)"
-          :data-type="type"
           :placeholder="placeholder"
       >
       </textarea>

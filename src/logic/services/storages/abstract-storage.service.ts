@@ -3,6 +3,8 @@ export interface AbstractKeyValueStorage<T> {
 
     get(key: string): T | undefined;
 
+    getAll(): Record<string, T>;
+
     delete(key: string): void;
 }
 
@@ -12,4 +14,13 @@ export interface AbstractStorage<T> {
     get(): T | undefined;
 
     delete(): void;
+}
+
+export interface AbstractEntityStorage<T> {
+
+    save(value: T): void;
+
+    get(id: any): T | undefined;
+
+    delete(id: any): void;
 }

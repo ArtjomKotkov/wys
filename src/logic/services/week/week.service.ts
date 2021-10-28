@@ -1,6 +1,6 @@
 import {LocalStorageKeyValueService} from "@/logic/services/storages";
 import {WeekConfig} from "@/logic/services/week/types";
-import {dateToString, stringToDate} from "@/logic";
+import {dateRangeToStringRange, dateToString, stringRangeToDateRange, stringToDate} from "@/logic";
 import {AbstractKeyValueStorage} from "@/logic/services/storages/abstract-storage.service";
 
 
@@ -31,13 +31,30 @@ export class WeekService {
         } : undefined;
     }
 
+    getByDate(date: Date): WeekConfig | undefined {
+        const value = this.store.getAll();
+        let result = undefined;
+
+        Object.keys(value).filter(key => {
+            const [fromDate, toDate] = this.decodeKey(key);
+            if (fromDate <= date && date <= toDate) {
+                result = value[key];
+            }
+        });
+
+        return result;
+    }
+
     remove(from: Date, to: Date): void {
         const key = this.makeKey(from, to);
         this.store.delete(key);
     }
 
-    makeKey(from: Date, to: Date): string {
-        return `${dateToString(from)}-${dateToString(to)}`
+    private makeKey(from: Date, to: Date): string {
+        return dateRangeToStringRange(from, to);
     }
 
+    private decodeKey(keyString: string): Date[] {
+        return stringRangeToDateRange(keyString);
+    }
 }

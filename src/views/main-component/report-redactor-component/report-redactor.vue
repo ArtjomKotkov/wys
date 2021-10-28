@@ -36,6 +36,9 @@
         </button>
       </div>
     </div>
+    <div class="report-errors">
+      <span v-if="!isWeekTokenProvided">Отчет можно сохранить только локально, так как не предоставлен ключ недели.</span>
+    </div>
     <div class="nav">
       <div
           v-for="item in navSelectionItems" :key="item.key"
@@ -64,6 +67,19 @@
 </template>
 
 <style lang="scss">
+
+  .report-errors {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    & span {
+      padding: 10px 0 0 0;
+      color: var(--invalid-red);
+    }
+  }
+
   @media (max-width: 1610px) {
     .report-redactor-wrapper {
       overflow: visible !important;
@@ -169,7 +185,7 @@ import IconComponent from "@/shared/icons/icon.vue";
 import ReportForm from "@/views/main-component/report-redactor-component/report-form.vue";
 import PlanRedactor from "@/views/main-component/report-redactor-component/plan-redactor.vue";
 import {Inject, Watch} from "vue-property-decorator";
-import {EntitySelectorService} from "@/logic";
+import {EntitySelectorService, Plan, Report, ReportService, stringToDate, TokenApiResponse} from "@/logic";
 
 
 @Options({
@@ -185,21 +201,19 @@ import {EntitySelectorService} from "@/logic";
 })
 export default class ReportRedactorComponent extends Vue {
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
+  @Inject('reportService') readonly reportService!: ReportService;
 
-  mockProjects: SelectItem[] = [
-    {key: '1', title: 'проект 1'},
-    {key: '2', title: 'проект 2'}
-  ];
+  projects: SelectItem[] = [];
+  subProjects: SelectItem[] = [];
 
-  form = new Form({
-    project: new InputControl<SelectItem>(this.mockProjects[0]),
-    subProject: new InputControl<SelectItem>(this.mockProjects[0]),
-    reportData: new InputControl<string>('', [(_: any) => this.reportIsValid]),
-    planData: new InputControl<string>('', [(_: any) => this.planIsValid]),
-  });
+  form!: Form;
 
   reportIsValid = false;
   planIsValid = false;
+
+  selectedDate?: Date;
+  isWeekTokenProvided = false;
+  weekData?: TokenApiResponse;
 
   navSelectionItems: SelectItem[] = [
     {key: 'report', title: 'Отчет'},
@@ -208,17 +222,74 @@ export default class ReportRedactorComponent extends Vue {
 
   selectedNav = this.navSelectionItems[0];
 
+  async created(): Promise<void> {
+    this.selectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
+    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
+    await this.resetForm();
+  }
+
   handleSave(): void {
     if (this.form.controls.reportData.isValid && !this.form.controls.planData.isValid) {
       this.selectedNav = this.navSelectionItems[1];
     } else if (this.form.controls.planData.isValid && !this.form.controls.reportData.isValid) {
       this.selectedNav = this.navSelectionItems[0];
+    } else {
+      this.save();
     }
   }
 
-  @Watch('entitySelectorService', {deep: true})
-  update(): void {
-    this.form.reset();
+  save(): void {
+    const currentSelectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
+    const formValues = this.form.values;
+
+    this.reportService.save({
+      date: currentSelectedDate,
+      project: formValues.project.key,
+      subProject: formValues.subProject.key,
+      report: formValues.reportData,
+      plan: formValues.planData,
+    }, false);
   }
+
+  @Watch('entitySelectorService', {deep: true})
+  async resetForm(): Promise<void> {
+    if (!this.weekData && this.selectedDate) {
+      this.weekData = await this.reportService.getWeekData(this.selectedDate);
+    }
+
+    if (this.weekData) {
+      this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
+      this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
+    }
+
+    this.selectedNav = this.navSelectionItems[0];
+    const dayReportData = this.reportService.getFromStore(stringToDate(this.entitySelectorService.getCurrent()!.id));
+    let initFormData: Record<string, any> = {
+      project: this.projects[0],
+      subProject: this.subProjects[0],
+      reportData: [],
+      planData: [],
+    }
+
+    if (dayReportData) {
+      const selectedProject = this.projects.find(project => project.key === dayReportData?.project);
+      if (selectedProject) {
+        initFormData.project = selectedProject;
+      }
+      const selectedSubProject = this.subProjects.find(project => project.key === dayReportData?.subProject);
+      if (selectedSubProject) {
+        initFormData.subProject = selectedSubProject;
+      }
+      initFormData.reportData = dayReportData.report;
+      initFormData.planData = dayReportData.plan;
+    }
+    this.form = new Form({
+      project: new InputControl<SelectItem>(initFormData.project),
+      subProject: new InputControl<SelectItem>(initFormData.subProject),
+      reportData: new InputControl<Report[]>(initFormData.reportData, [(_: any) => this.reportIsValid]),
+      planData: new InputControl<Plan[]>(initFormData.planData, [(_: any) => this.planIsValid]),
+    });
+  }
+
 }
 </script>

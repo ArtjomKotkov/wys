@@ -58,7 +58,11 @@
 <script lang="ts">
 import {Options, Vue} from "vue-class-component";
 import {Provide} from "vue-property-decorator";
-import {EntitySelectorService, WeekService} from "@/logic";
+import {
+  EntitySelectorService,
+  ReportService,
+  WeekService,
+} from "@/logic";
 import MainComponent from "@/views/main-component/main.vue";
 import CalendarComponent from "@/views/calendar-component/calendar.vue";
 import IconsDefinitionComponent from "@/shared/icons/icons-definition.vue";
@@ -76,6 +80,7 @@ export default class App extends Vue {
   @Provide('weekConfigService') weekConfigService: WeekService = new WeekService();
   @Provide('mainConfigService') mainConfigService: MainConfigService = new MainConfigService();
   @Provide('entitySelectorService') entitySelectorService = new EntitySelectorService();
+  @Provide('reportService') reportService = new ReportService(this.weekConfigService);
 }
 
 

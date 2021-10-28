@@ -25,6 +25,10 @@ export class LocalStorageKeyValueService implements AbstractKeyValueStorage<Reco
         return storedData[key];
     }
 
+    getAll(): Record<string, Record<string, any>> {
+        return this.getGroup();
+    }
+
     delete(key: string): void {
         const storedData = this.getGroup();
         if (storedData) {
