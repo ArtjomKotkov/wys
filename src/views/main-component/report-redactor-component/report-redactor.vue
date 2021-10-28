@@ -203,8 +203,8 @@ export default class ReportRedactorComponent extends Vue {
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
   @Inject('reportService') readonly reportService!: ReportService;
 
-  projects: SelectItem[] = [];
-  subProjects: SelectItem[] = [];
+  projects: SelectItem[] = [{key: '0', title: 'test'}];
+  subProjects: SelectItem[] = [{key: '0', title: 'test'}];
 
   form!: Form;
 
@@ -253,14 +253,14 @@ export default class ReportRedactorComponent extends Vue {
 
   @Watch('entitySelectorService', {deep: true})
   async resetForm(): Promise<void> {
-    if (!this.weekData && this.selectedDate) {
-      this.weekData = await this.reportService.getWeekData(this.selectedDate);
-    }
-
-    if (this.weekData) {
-      this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
-      this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
-    }
+    // if (!this.weekData && this.selectedDate) {
+    //   this.weekData = await this.reportService.getWeekData(this.selectedDate);
+    // }
+    //
+    // if (this.weekData) {
+    //   this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
+    //   this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
+    // }
 
     this.selectedNav = this.navSelectionItems[0];
     const dayReportData = this.reportService.getFromStore(stringToDate(this.entitySelectorService.getCurrent()!.id));
