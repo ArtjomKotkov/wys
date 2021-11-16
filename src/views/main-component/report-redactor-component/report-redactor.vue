@@ -1,5 +1,5 @@
 <template>
-  <div class="report-redactor-wrapper">
+  <div class="report-redactor-wrapper" v-if="isWeekTokenProvided && form">
     <div class="main-selectors">
       <select-component
           class="project-selector"
@@ -7,7 +7,7 @@
           v-model="form.controls.project.value"
           label="Проект"
 
-          :items="mockProjects"
+          :items="projects"
       >
       </select-component>
       <select-component
@@ -16,7 +16,7 @@
           v-model="form.controls.subProject.value"
           label="Под проект"
 
-          :items="mockProjects"
+          :items="subProjects"
       >
       </select-component>
       <div class="buttons-block">
@@ -35,9 +35,6 @@
           <span v-if="form.controls.planData.isValid && !form.controls.reportData.isValid">Заполнить отчет</span>
         </button>
       </div>
-    </div>
-    <div class="report-errors">
-      <span v-if="!isWeekTokenProvided">Отчет можно сохранить только локально, так как не предоставлен ключ недели.</span>
     </div>
     <div class="nav">
       <div
@@ -223,8 +220,6 @@ export default class ReportRedactorComponent extends Vue {
   selectedNav = this.navSelectionItems[0];
 
   async created(): Promise<void> {
-    this.selectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
-    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
     await this.resetForm();
   }
 
@@ -253,14 +248,17 @@ export default class ReportRedactorComponent extends Vue {
 
   @Watch('entitySelectorService', {deep: true})
   async resetForm(): Promise<void> {
-    // if (!this.weekData && this.selectedDate) {
-    //   this.weekData = await this.reportService.getWeekData(this.selectedDate);
-    // }
-    //
-    // if (this.weekData) {
-    //   this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
-    //   this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
-    // }
+    this.selectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
+    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
+
+    if (!this.weekData && this.selectedDate) {
+       this.weekData = await this.reportService.getWeekData(this.selectedDate);
+    }
+
+    if (this.weekData) {
+      this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
+      this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
+    }
 
     this.selectedNav = this.navSelectionItems[0];
     const dayReportData = this.reportService.getFromStore(stringToDate(this.entitySelectorService.getCurrent()!.id));

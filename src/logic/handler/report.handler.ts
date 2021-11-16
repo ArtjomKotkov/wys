@@ -2,20 +2,18 @@ import {ReportModel, TokenApiResponse} from "@/logic/services/reports";
 
 
 export class ReportHandler {
-    baseUrl = '***';
+    baseUrl = 'http://127.0.0.1:5000';
 
     async token(token: string): Promise<TokenApiResponse> {
-        const url = new URL(`${this.baseUrl}/report_token`);
+        const url = new URL(`${this.baseUrl}/token`);
         const params = {
             token: token
         }
 
         url.search = new URLSearchParams(params).toString();
 
-        const response = await fetch(url.toString(), {mode:'no-cors'});
-        const a = await response.json() as TokenApiResponse;
-        console.log(a);
-        return a;
+        const response = await fetch(url.toString());
+        return await response.json() as TokenApiResponse;
     }
 
     async report(

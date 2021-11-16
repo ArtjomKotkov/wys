@@ -35,6 +35,10 @@ export class WeekService {
         const value = this.store.getAll();
         let result = undefined;
 
+        if (!value) {
+            return result;
+        }
+
         Object.keys(value).filter(key => {
             const [fromDate, toDate] = this.decodeKey(key);
             if (fromDate <= date && date <= toDate) {
