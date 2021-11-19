@@ -5,7 +5,7 @@ export interface Report {
     name: string;
     subName?: string;
     timeRange: TimeRange;
-    description: string;
+    description?: string;
 }
 
 export interface Plan {

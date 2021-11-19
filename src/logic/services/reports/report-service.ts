@@ -1,4 +1,4 @@
-import {dateToString, TokenApiResponse, WeekService} from "@/logic";
+import {dateToReportDateString, dateToString, TimeRange, TokenApiResponse, WeekService} from "@/logic";
 import {ReportDataEntityService} from "@/logic/services/storages";
 import {Plan, Report, ReportData, ReportModel} from "@/logic/services/reports/types";
 import {ReportHandler} from "@/logic/handler";
@@ -23,8 +23,21 @@ export class ReportService {
         return await this.handler.token(token);
     }
 
-    getFromServer(date: Date): ReportData | undefined {
-        return this.store.get(date);
+    async getFromServer(project_id: number, date: Date): Promise<Partial<ReportData> | undefined> {
+        const token = this.getTokenByDate(date);
+        if (!token) {
+            return undefined;
+        }
+        const report_data = await this.handler.report(token, project_id, dateToReportDateString(date));
+
+        const reportParsedData = this.parseReportString(report_data.report);
+        const planParsedData = this.parsePlanString(report_data.plan);
+
+        return {
+            date: date,
+            report: reportParsedData,
+            plan: planParsedData,
+        };
     }
 
     getFromStore(date: Date): ReportData | undefined {
@@ -83,4 +96,42 @@ export class ReportService {
         return planRows.join('\n\n');
     }
 
+    private parsePlanString(report: string): Plan[] {
+        const nameRe = /"(.*)"/;
+        const subNameRe = /\((.*)\)/;
+
+        return report.split('\n\n').map(row => {
+            const name = row.match(nameRe);
+            const subName = row.match(subNameRe);
+
+            return {
+                name: name && name[1] ? name[1] : 'Ошибка распознования',
+                subName: subName && subName[1] ? subName[1] : undefined,
+            }
+        });
+    }
+
+    private parseReportString(report: string): Report[] {
+        const nameRe = /"(.*)"/;
+        const subNameRe = /\((.*)\)/;
+        const timeRe = /(\[((\d*)h)?(\s?(\d*)m)?\])/;
+
+        return report.split('\n\n').map(row => {
+            const [mainData, description] = row.split('\n');
+            const name = mainData.match(nameRe);
+            const subName = mainData.match(subNameRe);
+            const time = mainData.match(timeRe);
+
+            return {
+                taskType: subName ? 'Задача' : 'Без типа',
+                name: name && name[1] ? name[1] : 'Ошибка распознования',
+                subName: subName && subName[1] ? subName[1] : undefined,
+                timeRange: {
+                    hour: time && time[3] ? String(time[3]) : '0',
+                    minute: time && time[5] ? String(time[5]) : '0',
+                },
+                description: description,
+            }
+        });
+    }
 }

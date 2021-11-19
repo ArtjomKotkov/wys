@@ -141,7 +141,7 @@ import Textarea from "@/shared/form/textarea.vue";
   }
 })
 export default class ReportForm extends Vue {
-  @Prop(String) modelValue?: Report[];
+  @Prop(Array) modelValue?: Report[];
 
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
 
@@ -156,6 +156,7 @@ export default class ReportForm extends Vue {
     this.taskTypes = this.taskTypes.concat(this.mainConfigService.get().taskTypes.map(item => ({
       key: item.name, title: item.name, color: item.color
     })));
+    console.log('mounted with', this.modelValue)
     this.modelValue?.forEach(reportData => this.add(
         this.taskTypes.find(taskType => taskType.key === reportData.taskType),
         reportData.name,

@@ -182,7 +182,16 @@ import IconComponent from "@/shared/icons/icon.vue";
 import ReportForm from "@/views/main-component/report-redactor-component/report-form.vue";
 import PlanRedactor from "@/views/main-component/report-redactor-component/plan-redactor.vue";
 import {Inject, Watch} from "vue-property-decorator";
-import {EntitySelectorService, Plan, Report, ReportService, stringToDate, TokenApiResponse} from "@/logic";
+import {
+  EntitySelectorService,
+  isEqualDay,
+  Plan,
+  Report,
+  ReportData,
+  ReportService,
+  stringToDate,
+  TokenApiResponse
+} from "@/logic";
 
 
 @Options({
@@ -200,8 +209,8 @@ export default class ReportRedactorComponent extends Vue {
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
   @Inject('reportService') readonly reportService!: ReportService;
 
-  projects: SelectItem[] = [{key: '0', title: 'test'}];
-  subProjects: SelectItem[] = [{key: '0', title: 'test'}];
+  projects: SelectItem[] = [];
+  subProjects: SelectItem[] = [];
 
   form!: Form;
 
@@ -248,16 +257,31 @@ export default class ReportRedactorComponent extends Vue {
 
   @Watch('entitySelectorService', {deep: true})
   async resetForm(): Promise<void> {
-    this.selectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
-    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
+    const date = stringToDate(this.entitySelectorService.getCurrent()!.id);
+    console.log(this.selectedDate, date, this.selectedDate && isEqualDay(date, this.selectedDate))
 
-    if (!this.weekData && this.selectedDate) {
-       this.weekData = await this.reportService.getWeekData(this.selectedDate);
+    if (this.selectedDate && isEqualDay(date, this.selectedDate)) {
+      return;
     }
 
-    if (this.weekData) {
-      this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
-      this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
+    console.log()
+    this.selectedDate = date;
+
+    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
+
+    let externalReportData: Partial<ReportData> | undefined;
+
+    if (this.selectedDate) {
+       this.weekData = await this.reportService.getWeekData(this.selectedDate);
+
+      if (this.weekData) {
+        this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
+        this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
+
+        externalReportData = await this.reportService.getFromServer(Number(this.projects[0].key), this.selectedDate);
+
+        console.log('report', externalReportData)
+      }
     }
 
     this.selectedNav = this.navSelectionItems[0];
@@ -281,13 +305,13 @@ export default class ReportRedactorComponent extends Vue {
       initFormData.reportData = dayReportData.report;
       initFormData.planData = dayReportData.plan;
     }
+
     this.form = new Form({
       project: new InputControl<SelectItem>(initFormData.project),
       subProject: new InputControl<SelectItem>(initFormData.subProject),
-      reportData: new InputControl<Report[]>(initFormData.reportData, [(_: any) => this.reportIsValid]),
-      planData: new InputControl<Plan[]>(initFormData.planData, [(_: any) => this.planIsValid]),
+      reportData: new InputControl<Report[]>(externalReportData ? externalReportData.report : initFormData.reportData, [(_: any) => this.reportIsValid]),
+      planData: new InputControl<Plan[]>(externalReportData ? externalReportData.plan : initFormData.planData, [(_: any) => this.planIsValid]),
     });
   }
-
 }
 </script>

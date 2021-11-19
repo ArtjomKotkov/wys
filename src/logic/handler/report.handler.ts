@@ -30,7 +30,7 @@ export class ReportHandler {
 
         url.search = new URLSearchParams(params).toString();
 
-        const response = await fetch(url.toString(), {mode: 'no-cors'});
+        const response = await fetch(url.toString());
 
         return await response.json() as ReportModel;
     }

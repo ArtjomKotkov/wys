@@ -4,6 +4,11 @@ export const defaultConfig: mainConfig = {
     hoursPerDay: 8,
     taskTypes: [
         {
+          "name": "Без типа",
+          "color": [0, 0],
+          "removable": false,
+        },
+        {
             "name": "Задача",
             "color": [54, 80],
             "removable": false

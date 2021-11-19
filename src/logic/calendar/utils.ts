@@ -39,6 +39,8 @@ export const dateToString = (day: Date) : string => `${day.getDate()}.${day.getM
 
 export const dateRangeToStringRange = (from: Date, to: Date): string => `${dateToString(from)}-${dateToString(to)}`;
 
+export const dateToReportDateString = (day: Date) : string => `${day.getFullYear()}-${day.getMonth()+1}-${day.getDate()}`;
+
 export const stringRangeToDateRange = (rangeString: string): Date[] => {
     const [dateStringFrom, dateStringTo] = rangeString.split('-');
     return [stringToDate(dateStringFrom), stringToDate(dateStringTo)];
