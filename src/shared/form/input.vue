@@ -22,7 +22,7 @@
         >
         </div>
       </div>
-      <div class="line" v-if="style_ === 'monolith'"></div>
+      <div class="line" v-if="style_ === 'monolith' && !hideLine"></div>
     </div>
   </div>
 </template>
@@ -223,6 +223,7 @@ export default class InputComponent extends Vue {
   @Prop(Number) min?: number;
   @Prop(Number) max?: number;
   @Prop(String) align: 'center' | 'left' | 'right' = 'left';
+  @Prop(Boolean) hideLine = false;
 
   forceTextType = false;
 }

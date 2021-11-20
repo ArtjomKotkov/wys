@@ -20,17 +20,16 @@
               :is-valid="form.controls.name.isValid"
           ></input-component>
           <input-component
-              class="name-input form-block-item"
+              class="task-link name-input form-block-item"
 
               v-model="form.controls.subName.value"
-
-              v-if="form.controls.taskType.value.key.toLowerCase() === 'задача'"
 
               type="text"
               style_="monolith"
               placeholder="Ссылка на задачу"
 
               :is-valid="form.controls.subName.isValid"
+              :hide-line="true"
           ></input-component>
         </div>
         <time-range-input class="form-block-item" v-model="form.controls.timeRange.value"></time-range-input>

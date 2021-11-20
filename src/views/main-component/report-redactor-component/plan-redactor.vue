@@ -28,6 +28,7 @@
             placeholder="Ссылка на задачу"
 
             :is-valid="form.controls.subName.isValid"
+            :hide-line="true"
         ></input-component>
         <icon-component
             class="form-block-item"
