@@ -5,7 +5,7 @@ export const defaultConfig: mainConfig = {
     taskTypes: [
         {
           "name": "Без типа",
-          "color": [0, 0],
+          "color": [0, 80],
           "removable": false,
         },
         {

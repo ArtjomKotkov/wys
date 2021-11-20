@@ -8,12 +8,6 @@
     ></icon-component>
     <div class="forms">
       <div class="form-block" v-for="(form, index) in forms" :key="index">
-        <select-component
-            class="form-block-item"
-            v-model="form.controls.taskType.value"
-
-            :items="taskTypes"
-        ></select-component>
         <div class="name-block form-block-item">
           <input-component
               class="name-input"
@@ -156,7 +150,6 @@ export default class ReportForm extends Vue {
     this.taskTypes = this.taskTypes.concat(this.mainConfigService.get().taskTypes.map(item => ({
       key: item.name, title: item.name, color: item.color
     })));
-    console.log('mounted with', this.modelValue)
     this.modelValue?.forEach(reportData => this.add(
         this.taskTypes.find(taskType => taskType.key === reportData.taskType),
         reportData.name,
@@ -199,7 +192,7 @@ export default class ReportForm extends Vue {
     this.$emit('update:modelValue', this.getFormatedReportData());
   }
 
-  @Watch('modelValue', {deep: true})
+  @Watch('modelValue')
   onModelValueChanged(): void {
     this.forms = [];
     this.modelValue?.forEach(reportData => this.add(

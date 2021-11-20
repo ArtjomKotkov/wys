@@ -40,10 +40,6 @@ export class ReportService {
         };
     }
 
-    getFromStore(date: Date): ReportData | undefined {
-        return this.store.get(date);
-    }
-
     save(report: ReportData, sendToServer = false): boolean {
         this.store.save(report);
 

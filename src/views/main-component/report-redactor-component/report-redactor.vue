@@ -1,65 +1,72 @@
 <template>
-  <div class="report-redactor-wrapper" v-if="isWeekTokenProvided && form">
-    <div class="main-selectors">
-      <select-component
-          class="project-selector"
+  <div class="report-redactor-wrapper">
+    <div class="week-key-error" v-if="!isWeekTokenProvided">
+      <img class='key-icon' src="@/assets/key.png">
+      <div>Не предоставлен ключ недели</div>
+    </div>
+    <div v-if="isWeekTokenProvided && form">
+      <div class="main-selectors">
+        <select-component
+            class="project-selector"
 
-          v-model="form.controls.project.value"
-          label="Проект"
+            v-model="form.controls.project.value"
+            label="Проект"
 
-          :items="projects"
-      >
-      </select-component>
-      <select-component
-          class="project-selector"
-
-          v-model="form.controls.subProject.value"
-          label="Под проект"
-
-          :items="subProjects"
-      >
-      </select-component>
-      <div class="buttons-block">
-        <icon-component
-            class="jira-icon"
-            name="jira"
-        ></icon-component>
-        <button
-            class="save-button"
-            @click="handleSave"
-
-            :disabled="!form.controls.planData.isValid && !form.controls.reportData.isValid"
+            :items="projects"
         >
-          <span v-if="!(form.controls.reportData.isValid && !form.controls.planData.isValid) && !(form.controls.planData.isValid && !form.controls.reportData.isValid)">Сохранить</span>
-          <span v-if="form.controls.reportData.isValid && !form.controls.planData.isValid">Заполнить план</span>
-          <span v-if="form.controls.planData.isValid && !form.controls.reportData.isValid">Заполнить отчет</span>
-        </button>
+        </select-component>
+        <select-component
+            class="project-selector"
+
+            v-model="form.controls.subProject.value"
+            label="Под проект"
+
+            :items="subProjects"
+        >
+        </select-component>
+        <div class="buttons-block">
+          <icon-component
+              class="jira-icon"
+              name="jira"
+          ></icon-component>
+          <button
+              class="save-button"
+              @click="handleSave"
+
+              :disabled="!form.controls.planData.isValid && !form.controls.reportData.isValid"
+          >
+            <span v-if="!(form.controls.reportData.isValid && !form.controls.planData.isValid) && !(form.controls.planData.isValid && !form.controls.reportData.isValid)">Сохранить</span>
+            <span v-if="form.controls.reportData.isValid && !form.controls.planData.isValid">Заполнить план</span>
+            <span v-if="form.controls.planData.isValid && !form.controls.reportData.isValid">Заполнить отчет</span>
+          </button>
+        </div>
       </div>
-    </div>
-    <div class="nav">
-      <div
-          v-for="item in navSelectionItems" :key="item.key"
+      <div class="nav">
+        <div
+            v-for="item in navSelectionItems" :key="item.key"
 
-          :data-selected="selectedNav.key === item.key"
-          @click="selectedNav = item"
-      >
-        {{item.title}}
+            :data-selected="selectedNav.key === item.key"
+            @click="selectedNav = item"
+        >
+          {{item.title}}
+        </div>
       </div>
+      <report-form
+          v-show="selectedNav.key === 'report'"
+
+          v-model="form.controls.reportData.value"
+
+          @validityChange="reportIsValid = $event"
+      ></report-form>
+      <plan-redactor
+          v-show="selectedNav.key === 'plan'"
+
+          v-model="form.controls.planData.value"
+
+          @validityChange="planIsValid = $event"
+      ></plan-redactor>
     </div>
-    <report-form
-        v-show="selectedNav.key === 'report'"
 
-        v-model="form.controls.reportData.value"
-
-        @validityChange="reportIsValid = $event"
-    ></report-form>
-    <plan-redactor
-        v-show="selectedNav.key === 'plan'"
-
-        v-model="form.controls.planData.value"
-
-        @validityChange="planIsValid = $event"
-    ></plan-redactor>
   </div>
 </template>
 
@@ -80,6 +87,26 @@
   @media (max-width: 1610px) {
     .report-redactor-wrapper {
       overflow: visible !important;
+    }
+  }
+
+  .week-key-error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    line-height: 100%;
+    height: 100%;
+    text-align: center;
+    color: var(--light-gray);
+    font-weight: bold;
+    font-size: 32px;
+
+    .key-icon {
+      filter: invert(0.25);
+      height: 250px;
+      width: 250px;
     }
   }
 
@@ -121,6 +148,7 @@
   }
 
   .report-redactor-wrapper {
+
     flex-grow: 1;
 
     background-color: var(--dark-gray);
@@ -221,6 +249,8 @@ export default class ReportRedactorComponent extends Vue {
   isWeekTokenProvided = false;
   weekData?: TokenApiResponse;
 
+  loading = false;
+
   navSelectionItems: SelectItem[] = [
     {key: 'report', title: 'Отчет'},
     {key: 'plan', title: 'План'}
@@ -233,9 +263,9 @@ export default class ReportRedactorComponent extends Vue {
   }
 
   handleSave(): void {
-    if (this.form.controls.reportData.isValid && !this.form.controls.planData.isValid) {
+    if (this.form?.controls.reportData.isValid && !this.form.controls.planData.isValid) {
       this.selectedNav = this.navSelectionItems[1];
-    } else if (this.form.controls.planData.isValid && !this.form.controls.reportData.isValid) {
+    } else if (this.form?.controls.planData.isValid && !this.form.controls.reportData.isValid) {
       this.selectedNav = this.navSelectionItems[0];
     } else {
       this.save();
@@ -255,63 +285,60 @@ export default class ReportRedactorComponent extends Vue {
     }, false);
   }
 
+  @Watch('loading')
+  onLoadingChange(): void {
+    this.$emit('loadingchange', this.loading);
+  }
+
   @Watch('entitySelectorService', {deep: true})
   async resetForm(): Promise<void> {
+    this.loading = true;
+
     const date = stringToDate(this.entitySelectorService.getCurrent()!.id);
-    console.log(this.selectedDate, date, this.selectedDate && isEqualDay(date, this.selectedDate))
+
+    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(date);
+
+    if (!this.isWeekTokenProvided) {
+      this.loading = false;
+      return;
+    }
 
     if (this.selectedDate && isEqualDay(date, this.selectedDate)) {
       return;
     }
 
-    console.log()
     this.selectedDate = date;
-
-    this.isWeekTokenProvided = this.reportService.isWeekConfigProvidedForDate(this.selectedDate);
 
     let externalReportData: Partial<ReportData> | undefined;
 
     if (this.selectedDate) {
-       this.weekData = await this.reportService.getWeekData(this.selectedDate);
+      this.weekData = await this.reportService.getWeekData(this.selectedDate);
 
       if (this.weekData) {
         this.projects = this.weekData.projects.map(project => ({key: String(project.id), title: project.name}));
         this.subProjects = this.weekData.servers_jira.map(project => ({key: String(project.id), title: project.url_jira}));
 
         externalReportData = await this.reportService.getFromServer(Number(this.projects[0].key), this.selectedDate);
-
-        console.log('report', externalReportData)
       }
     }
 
     this.selectedNav = this.navSelectionItems[0];
-    const dayReportData = this.reportService.getFromStore(stringToDate(this.entitySelectorService.getCurrent()!.id));
-    let initFormData: Record<string, any> = {
-      project: this.projects[0],
-      subProject: this.subProjects[0],
-      reportData: [],
-      planData: [],
+
+    if (!externalReportData) {
+      this.loading = false;
+      return;
     }
 
-    if (dayReportData) {
-      const selectedProject = this.projects.find(project => project.key === dayReportData?.project);
-      if (selectedProject) {
-        initFormData.project = selectedProject;
-      }
-      const selectedSubProject = this.subProjects.find(project => project.key === dayReportData?.subProject);
-      if (selectedSubProject) {
-        initFormData.subProject = selectedSubProject;
-      }
-      initFormData.reportData = dayReportData.report;
-      initFormData.planData = dayReportData.plan;
-    }
-
+    // Форсим обновление формы если произошла перезагрузка стр.
     this.form = new Form({
-      project: new InputControl<SelectItem>(initFormData.project),
-      subProject: new InputControl<SelectItem>(initFormData.subProject),
-      reportData: new InputControl<Report[]>(externalReportData ? externalReportData.report : initFormData.reportData, [(_: any) => this.reportIsValid]),
-      planData: new InputControl<Plan[]>(externalReportData ? externalReportData.plan : initFormData.planData, [(_: any) => this.planIsValid]),
+      project: new InputControl<SelectItem>(this.projects[0]),
+      subProject: new InputControl<SelectItem>(this.subProjects[0]),
+      reportData: new InputControl<Report[]>(externalReportData.report ? externalReportData.report : [], [(_: any) => this.reportIsValid]),
+      planData: new InputControl<Plan[]>(externalReportData.plan ? externalReportData.plan : [], [(_: any) => this.planIsValid]),
     });
+
+    this.loading = false;
+    this.$forceUpdate();
   }
 }
 </script>

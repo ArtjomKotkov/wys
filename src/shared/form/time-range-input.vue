@@ -184,7 +184,7 @@ import InputComponent from "@/shared/form/input.vue";
   }
 })
 export default class TimeRangeInput extends Vue {
-  @Prop(String) modelValue!: TimeRange;
+  @Prop() modelValue!: TimeRange;
 
   @Prop(String) label = '';
   @Prop(String) placeholder?: string;
