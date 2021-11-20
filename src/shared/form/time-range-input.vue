@@ -1,175 +1,148 @@
 <template>
   <div class="range-input-root-wrapper" v-click-outside="hide">
-    <div class="time-range-selector" @click="showed = !showed">
-      {{form.controls.hour.value}}ч {{form.controls.minute.value}}м
-      <div class="toggle-showing" :data-showed="showed" :data-invalid="!form.isValid"></div>
-    </div>
-    <div class="time-range-popup" v-if="showed">
-      <div class="time-range-input">
-        <input-component
-            class="number-input"
-
-            v-model="form.controls.hour.value"
-            type="number"
-            style_="monolith"
-            placeholder="часы"
-
-            :min="0"
-            :max="24"
-
-            :align="'center'"
-
-            :is-valid="form.controls.hour.isValid"
-        ></input-component>
-        <input-component
-            class="number-input"
-
-            v-model="form.controls.minute.value"
-            type="number"
-            style_="monolith"
-            placeholder="минуты"
-
-            :min="0"
-            :max="60"
-
-            :align="'center'"
-
-            :is-valid="form.controls.minute.isValid"
-        ></input-component>
+    <div class="range-input-main-body">
+      <div class="input-block" @click="$refs.hour.focus()">
+        <input ref="hour" type="number" v-model="form.controls.hour.value"><span>ч</span>
       </div>
-      <div class="default-time-ranges" v-if="defaultDateRanges">
-        <div
-          class="time-range"
-          v-for="(dateRange, index) in defaultDateRanges"
-          :key="index"
-          @click="selectDefaultRange(dateRange)"
-        >
-          <span v-if="dateRange.hour !== '0'">{{dateRange.hour}}ч </span>
-          <span v-if="dateRange.minute !== '0'">{{dateRange.minute}}м</span>
-        </div>
+      <div class="input-block" @click="$refs.minute.focus()">
+        <input ref="minute" type="number" v-model="form.controls.minute.value"><span>м</span>
+      </div>
+      <div class="selector-icon" @click="opened = !opened">
+        <div class="selector-shape" :data-opened="opened"></div>
+      </div>
+    </div>
+    <div class="under-line"></div>
+    <div class="options-selector" v-if="opened">
+      <div
+          class="option"
+          v-for="item in items"
+          :key="item.key"
+          @click="select(item)"
+      >
+        <span>{{item.title}}</span>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss">
-
-.range-input-root-wrapper {
-  position: relative;
-
-  & .time-range-selector {
+  .range-input-root-wrapper {
     position: relative;
-    
-    width: 140px;
+    background-color: var(--medium-gray);
     height: 45px;
+    max-width: 145px;
 
-    cursor: pointer;
-    text-align: center;
-    line-height: 45px;
+    font-size: 13px;
+  }
 
+  .range-input-main-body {
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
     color: white;
 
-    background-color: var(--medium-gray);
+    .input-block {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      flex-grow: 1;
 
-    & .toggle-showing {
-      margin: 0;
-      position: absolute;
-      right: 17.5px;
-      top: 17.5px;
+      input {
+        border: none;
+        outline: none;
+        background-color: transparent;
+        text-align: right;
+        padding-right: 5px;
+        width: 100%;
+      }
+    }
+  }
 
-      height: 10px;
+  .selector-icon {
+    min-width: 45px;
+    width: 45px;
+    cursor: pointer;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & .selector-shape {
       width: 10px;
+      height: 10px;
+      border-radius: 10px;
 
       background-color: transparent;
       outline: 2px solid var(--main-color);
 
-      &[data-showed=false] {
-        outline: none;
+      &[data-opened=true] {
         background-color: var(--main-color);
+        outline: none;
       }
 
-      &[data-invalid=true] {
-        background-color: var(--invalid-red);
-        outline: 2px solid var(--invalid-red);
-      }
     }
   }
 
-  & .time-range-popup {
-    z-index: 999;
+  .under-line {
     position: absolute;
-    top: -130px;
-    left: -130px;
-    background-color: var(--dark-gray);
-    border-radius: 15px;
-    outline: 2px solid #785FF7;
+    bottom: 0;
 
-    min-width: 300px;
-    height: 120px;
+    height: 1px;
+    width: calc(100% - 40px);
+    margin: 0 20px;
+    background-color: var(--main-color);
+  }
 
-    display: flex;
-    flex-direction: row;
-    gap: 30px;
+  .options-selector {
+    position: absolute;
+    top: 45px;
+    width: 100%;
+    background-color: var(--medium-gray);
 
-    padding: 0 30px;
+    z-index: 9999;
 
-    & .time-range-input {
+    .option {
       display: flex;
       flex-direction: row;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
-      gap: 10px;
 
-      input {
-        width: 60px !important;
+      cursor: pointer;
+
+      color: white;
+      line-height: 45px;
+
+      &:hover {
+        background-color: var(--light-gray);
       }
 
-    }
+      & .color-icon {
+        min-width: 15px;
+        margin-left: 40px;
 
-    & .default-time-ranges {
-      flex-grow: 1;
+        .color-shape {
+          width: 15px;
+          height: 15px;
 
-      display: flex;
-      flex-direction: row;
-
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-
-
-      gap: 10px;
-
-      & .time-range {
-        font-size: 16px;
-        line-height: 45px;
-
-        text-align: center;
-
-        width: 70px;
-        height: 40px;
-
-        background-color: #1C1C1C;
-        border-radius: 15px;
-
-        color: white;
-
-        cursor: pointer;
-
-        &:hover {
-          color: var(--dark-gray);
-          background-color: var(--main-color);
+          border-radius: 7.5px;
         }
       }
 
+      span {
+        text-align: center;
+        flex-grow: 1;
+      }
     }
   }
-}
 </style>
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
 import {Inject, Prop, Watch} from 'vue-property-decorator';
-import {clickOutside, Form, InputControl, inRange, required} from "@/shared";
+import {clickOutside, Form, InputControl, inRange, required, SelectItem} from "@/shared";
 import {MainConfigService} from "@/logic/services/main-config/main-config-service";
 import {TimeRange} from "@/logic/services/main-config";
 import InputComponent from "@/shared/form/input.vue";
@@ -198,21 +171,29 @@ export default class TimeRangeInput extends Vue {
     minute: new InputControl<number>(0, [required]),
   });
 
-  defaultDateRanges?: TimeRange[];
+  items?: SelectItem[];
 
-  showed = false;
+  opened = false;
 
   beforeCreate(): void {
     this.form.reset(this.modelValue);
   }
 
   mounted(): void {
-    this.defaultDateRanges = this.mainConfigService.get().timeRange;
+    this.items = this.mainConfigService.get().timeRange.map((timeRange, index) => ({
+      title: `${timeRange.hour}ч ${timeRange.minute}м`,
+      key: String(index),
+      payload: timeRange,
+    }));
   }
 
   @Watch('form', {deep: true})
   onFormValueChanged(): void {
-    this.tryFixFormValue()
+    this.tryFixFormValue();
+    this.$emit('update:modelValue', {
+      hour: this.form.controls.hour.value,
+      minute: this.form.controls.minute.value,
+    });
   }
 
   tryFixFormValue(): void {
@@ -236,13 +217,23 @@ export default class TimeRangeInput extends Vue {
   }
 
   private hide(): void {
-    if (this.showed) {
-      this.showed = false;
+    if (this.opened) {
+      this.opened = false;
     }
   }
 
   selectDefaultRange(dateRange: TimeRange): void {
     this.form.reset(dateRange);
+    this.hide();
+  }
+
+
+
+  select(item: SelectItem): void {
+    this.form.reset({
+      hour: item.payload.hour,
+      minute: item.payload.minute,
+    });
     this.hide();
   }
 }

@@ -34,7 +34,7 @@
         ></input-component>
         <icon-component @click="remove(index)" name="cross"></icon-component>
       </div>
-      <icon-component @click="add()" v-if="forms.length < limit" name="plus"></icon-component>
+      <icon-component @click="add()" name="plus"></icon-component>
   </div>
 </template>
 
@@ -94,7 +94,6 @@ export default class TimeRangeComponent extends Vue {
   @Prop() modelValue!: Record<string, any>[];
 
   forms: Form[] = [];
-  limit = 4;
 
   @Watch('forms', {deep: true})
   onFormsUpdate(): void {

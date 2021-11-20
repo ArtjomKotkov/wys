@@ -4,4 +4,5 @@ export interface SelectItem {
     title: string;
     key: string;
     color?: hslConfig;
+    payload?: any;
 }

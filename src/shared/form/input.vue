@@ -214,7 +214,7 @@ import {Prop} from 'vue-property-decorator';
 
 @Options({})
 export default class InputComponent extends Vue {
-  @Prop(String) modelValue!: string;
+  @Prop() modelValue!: string;
   @Prop(String) type!: 'text' | 'password' | 'number';
   @Prop(String) style_: 'rounded' | 'monolith' = 'rounded';
   @Prop(String) label = '';

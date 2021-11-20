@@ -102,7 +102,7 @@ import InputComponent from "@/shared/form/input.vue";
   }
 })
 export default class PlanRedactor extends Vue {
-  @Prop(Array) modelValue?: Plan[];
+  @Prop() modelValue?: Plan[];
 
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
 

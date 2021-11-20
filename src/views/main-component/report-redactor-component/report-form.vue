@@ -134,7 +134,7 @@ import Textarea from "@/shared/form/textarea.vue";
   }
 })
 export default class ReportForm extends Vue {
-  @Prop(Array) modelValue?: Report[];
+  @Prop() modelValue?: Report[];
 
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
 
