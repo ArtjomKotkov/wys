@@ -187,6 +187,17 @@ export default class TimeRangeInput extends Vue {
     }));
   }
 
+  @Watch('modelValue', {deep: true})
+  onModelValueChanged(): void {
+    if (this.form.values.hour === this.modelValue.hour && this.form.values.minute === this.modelValue.minute) {
+      return;
+    }
+    this.form.reset({
+      hour: this.modelValue.hour,
+      minute: this.modelValue.minute,
+    });
+  }
+
   @Watch('form', {deep: true})
   onFormValueChanged(): void {
     this.tryFixFormValue();

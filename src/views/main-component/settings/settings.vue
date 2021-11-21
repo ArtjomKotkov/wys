@@ -20,11 +20,6 @@
 
             :is-valid="form.controls.hoursPerDay.isValid"
         ></input-component>
-        <task-type-component
-            v-model="form.controls.taskTypes.value"
-
-            @reset="form.controls.taskTypes.forceUntouched()"
-        ></task-type-component>
       </div>
       <div class="settings-column">
         <time-range-component
@@ -122,7 +117,6 @@
 
 <script lang="ts">
 import {Options, Vue} from 'vue-class-component';
-import TaskTypeComponent from "@/views/main-component/settings/task-type-input/task-type-component.vue";
 import InputComponent from "@/shared/form/input.vue";
 import {Form, InputControl} from "@/shared";
 import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
@@ -132,7 +126,6 @@ import {mainConfig, MainConfigService} from "@/logic";
 
 @Options({
   components: {
-    TaskTypeComponent,
     InputComponent,
     TimeRangeComponent,
   }
@@ -151,7 +144,6 @@ export default class SettingsComponent extends Vue {
 
   form = new Form({
     hoursPerDay: new InputControl<number>(8, [this.hoursPerDayValidator]),
-    taskTypes: new InputControl<Record<string, any>[]>([]),
     timeRange: new InputControl<number[]>([]),
   });
 
