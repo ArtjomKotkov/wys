@@ -1,4 +1,4 @@
-import {dateToReportDateString, dateToString, TimeRange, TokenApiResponse, WeekService} from "@/logic";
+import {dateToReportDateString, dateToString, JiraData, TimeRange, TokenApiResponse, WeekService} from "@/logic";
 import {ReportDataEntityService} from "@/logic/services/storages";
 import {Plan, Report, ReportData, ReportModel} from "@/logic/services/reports/types";
 import {ReportHandler} from "@/logic/handler";
@@ -32,6 +32,23 @@ export class ReportService {
 
         const reportParsedData = this.parseReportString(report_data.report);
         const planParsedData = this.parsePlanString(report_data.plan);
+
+        return {
+            date: date,
+            report: reportParsedData,
+            plan: planParsedData,
+        };
+    }
+
+    async getFromJira(server_jira: number, date: Date): Promise<Partial<ReportData> | undefined> {
+        const token = this.getTokenByDate(date);
+        if (!token) {
+            return undefined;
+        }
+        const report_data = await this.handler.jiraReport(token, server_jira, dateToReportDateString(date));
+
+        const reportParsedData = this.parseReportString(report_data.text_worklogs);
+        const planParsedData = this.parsePlanString(report_data.text_plan);
 
         return {
             date: date,

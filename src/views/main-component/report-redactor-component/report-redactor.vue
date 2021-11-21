@@ -28,6 +28,7 @@
           <icon-component
               class="jira-icon"
               name="jira"
+              @click="loadFromJira"
           ></icon-component>
           <button
               class="save-button"
@@ -287,6 +288,30 @@ export default class ReportRedactorComponent extends Vue {
       report: formValues.reportData,
       plan: formValues.planData,
     }, false);
+  }
+
+  async loadFromJira(): Promise<void> {
+    if (!this.selectedDate) {
+      return;
+    }
+    this.loading = true;
+    const externalReportData = await this.reportService.getFromJira(Number(this.form.controls.subProject.value.key), this.selectedDate);
+
+    console.log(externalReportData)
+    if (!externalReportData) {
+      this.loading = false;
+      return;
+    }
+
+    this.form = new Form({
+      project: new InputControl<SelectItem>(this.projects[0]),
+      subProject: new InputControl<SelectItem>(this.subProjects[0]),
+      reportData: new InputControl<Report[]>(externalReportData.report ? externalReportData.report : [], [(_: any) => this.reportIsValid]),
+      planData: new InputControl<Plan[]>(externalReportData.plan ? externalReportData.plan : [], [(_: any) => this.planIsValid]),
+    });
+
+    this.loading = false;
+    this.$forceUpdate();
   }
 
   @Watch('loading')

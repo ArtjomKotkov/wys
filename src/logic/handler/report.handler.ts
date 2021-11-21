@@ -1,4 +1,4 @@
-import {ReportModel, TokenApiResponse} from "@/logic/services/reports";
+import {JiraData, ReportModel, TokenApiResponse} from "@/logic/services/reports";
 
 
 export class ReportHandler {
@@ -33,6 +33,25 @@ export class ReportHandler {
         const response = await fetch(url.toString());
 
         return await response.json() as ReportModel;
+    }
+
+    async jiraReport(
+        token: string,
+        server_jira: number,
+        date: string,
+    ): Promise<JiraData> {
+        const url = new URL(`${this.baseUrl}/jira`);
+        const params = {
+            token,
+            server_jira: String(server_jira),
+            date,
+        }
+
+        url.search = new URLSearchParams(params).toString();
+
+        const response = await fetch(url.toString());
+
+        return await response.json() as JiraData;
     }
 
     async update(

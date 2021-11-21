@@ -48,3 +48,8 @@ export interface ReportModel {
     report: string;
     plan: string;
 }
+
+export interface JiraData {
+    text_plan: string;
+    text_worklogs: string;
+}
