@@ -88,6 +88,10 @@
     .report-redactor-wrapper {
       overflow: visible !important;
     }
+
+    .form-block {
+      align-items: flex-end;
+    }
   }
 
   .week-key-error {

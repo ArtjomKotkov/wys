@@ -125,7 +125,7 @@ export default class PlanRedactor extends Vue {
       name: new InputControl<string>(name, [required]),
       subName: new InputControl<string>(subName),
     });
-    this.forms.push(form);
+    this.forms.unshift(form);
     if (emitEvent) {
       this.updateModelValue();
     }

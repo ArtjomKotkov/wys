@@ -174,7 +174,7 @@ export default class ReportForm extends Vue {
       timeRange: new InputControl<TimeRange>(timeRange),
       description: new InputControl<string>(description),
     });
-    this.forms.push(form);
+    this.forms.unshift(form);
     if (emitEvent) {
       this.updateModelValue();
     }

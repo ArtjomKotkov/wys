@@ -1,5 +1,5 @@
 <template>
-  <div class="selector-wrapper" v-click-outside="hide">
+  <div class="selector-wrapper" v-click-outside="hide" :style="{opened: opened}">
     <div class="main-input" @click="opened = !opened">
       <div class="color-icon">
         <div class="color-shape" :style="{'background-color': makeColor(modelValue?.color)}"></div>
@@ -30,6 +30,14 @@
 
 <style lang="scss">
   .selector-wrapper {
+
+    &.opened {
+      -webkit-box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+      -moz-box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+      box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+
+    }
+
     position: relative;
     margin: 0;
     padding: 0;

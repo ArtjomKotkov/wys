@@ -19,7 +19,7 @@
           :key="item.key"
           @click="select(item)"
       >
-        <span>{{item.title}}</span>
+        <span class="time-range">{{item.title}}</span>
       </div>
     </div>
   </div>
@@ -104,6 +104,10 @@
 
     z-index: 9999;
 
+    -webkit-box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.2);
+
     .option {
       display: flex;
       flex-direction: row;
@@ -131,7 +135,7 @@
         }
       }
 
-      span {
+      span.time-range {
         text-align: center;
         flex-grow: 1;
       }
