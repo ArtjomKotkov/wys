@@ -1,5 +1,5 @@
 export interface WeekConfig {
-    color: number[];
+    color: string;
     secretKey: string;
     from: Date;
     to: Date;

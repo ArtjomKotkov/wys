@@ -38,12 +38,7 @@
 
           :is-valid="form.controls.secretKey.isValid"
       ></input-component>
-      <color-picker-component
-          v-if="showWeekKeyInput"
-
-          v-model="form.controls.color.value"
-          :lightness="70"
-      ></color-picker-component>
+      <input v-if="showWeekKeyInput" type="color" v-model="form.controls.color.value">
     </div>
     <div class="week-actions" v-if="form.dirty">
       <button class="cancel-button" @click="resetConfigInputs">Отменить</button>
@@ -148,6 +143,33 @@
     }
   }
 
+  input[type='color'] {
+    -webkit-appearance: none;
+    background-color: transparent;
+    cursor: pointer;
+
+    height: 60px;
+    width: 60px;
+    border-radius: 15px;
+
+    outline: none;
+    border: none;
+  }
+
+  input[type="color"]::-webkit-color-swatch-wrapper {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    outline: none;
+  }
+  input[type="color"]::-webkit-color-swatch {
+
+    border: none;
+    outline: none;
+    border-radius: 15px;
+    background-color: transparent;
+  }
+
 </style>
 
 <script lang="ts">
@@ -178,15 +200,16 @@ import IconComponent from "@/shared/icons/icon.vue";
 export default class CalendarComponent extends Vue {
     private calendarService = new CalendarService();
 
-    defaultColorValue: hslConfig = [256, 65];
+    defaultColor = '#785FF7';
+
     selectedDate: Date = new Date();
 
     form = new Form({
       secretKey: new InputControl<string>('', [required]),
-      color: new InputControl<hslConfig>([256, 65]),
+      color: new InputControl<string>(this.defaultColor),
     });
 
-    @ProvideReactive('color') color: hslConfig = this.defaultColorValue;
+    @ProvideReactive('color') color = this.defaultColor;
 
     @Inject('weekConfigService') readonly weekConfigService!: WeekService;
     @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
@@ -288,7 +311,7 @@ export default class CalendarComponent extends Vue {
       const config = this.weekConfigService.get(entity.from, entity.to);
 
       this.form.reset({
-        color: config ? config.color : this.defaultColorValue,
+        color: config ? config.color : this.defaultColor,
         secretKey: config ? config.secretKey : '',
       });
     }

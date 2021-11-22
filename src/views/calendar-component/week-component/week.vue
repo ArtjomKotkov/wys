@@ -67,7 +67,7 @@ export default class WeekComponent extends Vue {
   @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
   @Inject('weekConfigService') readonly weekConfigService!: WeekService;
 
-  @InjectReactive('color') readonly color!: hslConfig;
+  @InjectReactive('color') readonly color!: string;
 
   config?: WeekConfig;
   defaultColor!: string;
@@ -93,7 +93,7 @@ export default class WeekComponent extends Vue {
   @Watch('entitySelectorService', {deep: true})
   update(): void {
     this.config = this.weekConfigService.get(this.entity.from, this.entity.to);
-    this.defaultColor = this.config ? hslConfigToBackgroundOption(this.config.color) : 'var(--light-gray)'
+    this.defaultColor = this.config ? this.config.color : 'var(--light-gray)'
   }
 
   get selected(): boolean {
@@ -105,7 +105,7 @@ export default class WeekComponent extends Vue {
   }
 
   get backgroundColor(): string {
-    return this.selected ? hslConfigToBackgroundOption(this.color) : this.defaultColor;
+    return this.selected ? this.color : this.defaultColor;
   }
 
 }
