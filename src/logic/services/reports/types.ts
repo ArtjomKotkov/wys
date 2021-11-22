@@ -1,7 +1,6 @@
 import {TimeRange} from "@/logic";
 
 export interface Report {
-    taskType: string;
     name: string;
     subName?: string;
     timeRange: TimeRange;

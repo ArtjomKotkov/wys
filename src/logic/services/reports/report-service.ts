@@ -15,6 +15,10 @@ export class ReportService {
     constructor(private weekService: WeekService) {
     }
 
+    async getWeekDataByToken(token: string): Promise<TokenApiResponse | undefined> {
+        return await this.handler.token(token);
+    }
+
     async getWeekData(date: Date): Promise<TokenApiResponse | undefined> {
         const token = this.getTokenByDate(date);
         if (!token) {
@@ -109,11 +113,15 @@ export class ReportService {
         return planRows.join('\n\n');
     }
 
-    private parsePlanString(report: string): Plan[] {
+    private parsePlanString(plan: string): Plan[] {
         const nameRe = /"(.*)"/;
         const subNameRe = /\((.*)\)/;
 
-        return report.split('\n\n').map(row => {
+        if (plan === '') {
+            return [];
+        }
+
+        return plan.split('\n\n').map(row => {
             const name = row.match(nameRe);
             const subName = row.match(subNameRe);
 
@@ -128,6 +136,10 @@ export class ReportService {
         const nameRe = /"(.*)"/;
         const subNameRe = /\((.*)\)/;
         const timeRe = /(\[((\d*)h)?(\s?(\d*)m)?\])/;
+
+        if (report === '') {
+            return [];
+        }
 
         return report.split('\n\n').map(row => {
             const [mainData, description] = row.split('\n');

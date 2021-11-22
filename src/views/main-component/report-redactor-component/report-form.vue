@@ -146,11 +146,7 @@ export default class ReportForm extends Vue {
   taskTypes: SelectItem[] = [this.blankTaskType];
 
   mounted(): void {
-    this.taskTypes = this.taskTypes.concat(this.mainConfigService.get().taskTypes.map(item => ({
-      key: item.name, title: item.name, color: item.color
-    })));
     this.modelValue?.forEach(reportData => this.add(
-        this.taskTypes.find(taskType => taskType.key === reportData.taskType),
         reportData.name,
         reportData.subName,
         reportData.timeRange,
@@ -160,7 +156,6 @@ export default class ReportForm extends Vue {
   }
 
   add(
-      taskType = this.blankTaskType,
       name = '',
       subName = '',
       timeRange = this.defaultTimeRange,
@@ -168,7 +163,6 @@ export default class ReportForm extends Vue {
       emitEvent = true,
   ): void {
     const form = new Form({
-      taskType: new InputControl<SelectItem>(taskType),
       name: new InputControl<string>(name, [required]),
       subName: new InputControl<string>(subName),
       timeRange: new InputControl<TimeRange>(timeRange),
@@ -195,7 +189,6 @@ export default class ReportForm extends Vue {
   onModelValueChanged(): void {
     this.forms = [];
     this.modelValue?.forEach(reportData => this.add(
-        this.taskTypes.find(taskType => taskType.key === reportData.taskType),
         reportData.name,
         reportData.subName,
         reportData.timeRange,
@@ -208,7 +201,6 @@ export default class ReportForm extends Vue {
     return this.forms.map(form => {
       const data = form.values;
       return {
-        taskType: data.taskType.key,
         name: data.name,
         subName: data.subName,
         timeRange: data.timeRange,

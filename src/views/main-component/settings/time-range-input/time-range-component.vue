@@ -95,15 +95,23 @@ export default class TimeRangeComponent extends Vue {
 
   forms: Form[] = [];
 
+  created(): void {
+    this.modelValue.forEach(time => this.add(time.hour, time.minute));
+  }
+
   @Watch('forms', {deep: true})
   onFormsUpdate(): void {
     this.$emit('update:modelValue', this.value);
   }
 
-  created(): void {
-    this.modelValue.forEach(value => this.add(value.hour, value.minute));
+  @Watch('modelValue', {deep: true})
+  onModelValueUpdate(): void {
+    if (this.makeComparingRow(this.modelValue) === this.makeComparingRow(this.value)) {
+      return;
+    }
 
-    this.resetForm();
+    this.forms = [];
+    this.modelValue.forEach(time => this.add(time.hour, time.minute));
   }
 
   add(hour = 0, minute = 0): void {
@@ -129,6 +137,10 @@ export default class TimeRangeComponent extends Vue {
 
   get value(): Record<string, any>[] {
     return this.forms.map(form => form.values);
+  }
+
+  makeComparingRow(data: Record<string, any>[]): string {
+    return data.map(item => `${item.hour}h${item.minute}m`).sort().join('.')
   }
 
 }

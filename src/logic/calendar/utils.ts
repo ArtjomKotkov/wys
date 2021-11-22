@@ -41,12 +41,17 @@ export const dateRangeToStringRange = (from: Date, to: Date): string => `${dateT
 
 export const dateToReportDateString = (day: Date) : string => `${day.getFullYear()}-${day.getMonth()+1}-${day.getDate()}`;
 
+export const reportDateStringToDate = (day: string) : Date => {
+    const [year, month, date] = day.split('-').map(item => Number(item));
+    return new Date(year, month-1, date);
+};
+
 export const stringRangeToDateRange = (rangeString: string): Date[] => {
     const [dateStringFrom, dateStringTo] = rangeString.split('-');
     return [stringToDate(dateStringFrom), stringToDate(dateStringTo)];
 };
 
-export const stringToDate = (day: string) : Date => {
+export const stringToDate = (day: string): Date => {
     const [year, month, date] = day.split('.').reverse().map(item => Number(item));
     return new Date(year, month-1, date);
 };

@@ -2,7 +2,6 @@ import {hslConfig} from "@/shared";
 
 export interface mainConfig {
     hoursPerDay: number;
-    taskTypes: taskType[];
     timeRange: TimeRange[];
 }
 

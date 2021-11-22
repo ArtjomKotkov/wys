@@ -13,6 +13,8 @@
   --light-gray: #2B2828;
   --medium-gray: #1C1C1C;
 
+  --light-gray-text: #eaeaea;
+
   --main-color: #785FF7;
   --secondary-color: #42348C;
   --third-color: #7263BD;

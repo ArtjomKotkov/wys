@@ -297,7 +297,6 @@ export default class ReportRedactorComponent extends Vue {
     this.loading = true;
     const externalReportData = await this.reportService.getFromJira(Number(this.form.controls.subProject.value.key), this.selectedDate);
 
-    console.log(externalReportData)
     if (!externalReportData) {
       this.loading = false;
       return;

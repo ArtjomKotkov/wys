@@ -120,7 +120,7 @@ import {Options, Vue} from 'vue-class-component';
 import InputComponent from "@/shared/form/input.vue";
 import {Form, InputControl} from "@/shared";
 import TimeRangeComponent from "@/views/main-component/settings/time-range-input/time-range-component.vue";
-import {Inject} from "vue-property-decorator";
+import {Inject, Watch} from "vue-property-decorator";
 import {mainConfig, MainConfigService} from "@/logic";
 
 
@@ -131,21 +131,29 @@ import {mainConfig, MainConfigService} from "@/logic";
   }
 })
 export default class SettingsComponent extends Vue {
-
   @Inject('mainConfigService') readonly mainConfigService!: MainConfigService;
 
-  created(): void {
-    const defaultValue = this.mainConfigService.get();
+  loading = false;
 
-    if (defaultValue) {
-      this.form.reset(defaultValue);
-    }
+  @Watch('loading')
+  onLoadingChange(): void {
+    this.$emit('loadingchange', this.loading);
   }
 
   form = new Form({
     hoursPerDay: new InputControl<number>(8, [this.hoursPerDayValidator]),
     timeRange: new InputControl<number[]>([]),
   });
+
+  created(): void {
+    this.loading = true;
+    const defaultValue = this.mainConfigService.get();
+
+    if (defaultValue) {
+      this.form.reset(defaultValue);
+    }
+    this.loading = false;
+  }
 
   save(): void {
     const value = this.form.values as mainConfig;
