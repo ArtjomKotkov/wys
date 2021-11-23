@@ -19,13 +19,12 @@
           @onSelected="resetConfigInputs($event)"
       ></week-component>
     </div>
-    <div class="week-key-input">
-      <div class="jira-sync-icon">
-        <icon-component
-            v-if="showWeekKeyInput && !form.dirty && form.isValid"
-            name="jira"
-        ></icon-component>
+    <div v-if="errors.length">
+      <div class="calendar-error">
+        <span v-for="error in errors" :key="error">{{error}}</span>
       </div>
+    </div>
+    <div class="week-key-input">
       <input-component
           v-if="showWeekKeyInput"
 
@@ -57,6 +56,12 @@
   @media (max-width: 1610px) {
     .calendar-wrapper {
       width: 100%;
+    }
+  }
+
+  .calendar-error {
+    span {
+      color: var(--invalid-red);
     }
   }
 
@@ -181,7 +186,14 @@ import {Options, Vue} from 'vue-class-component';
 import {CalendarService} from "@/logic/calendar/calendar";
 import {Calendar, WeekInfo} from "@/logic/calendar/types";
 import {Inject, Provide, ProvideReactive, Watch} from "vue-property-decorator";
-import {EntitySelectorService, stringToDate, WeekService} from "@/logic";
+import {
+  EntitySelectorService,
+  isEqualDay,
+  reportDateStringToDate,
+  ReportService,
+  stringToDate,
+  WeekService
+} from "@/logic";
 import {Form, hslConfig, InputControl, required} from "@/shared/form";
 import YearMonthSelector from "./year-month-selector-component/year-month-selector.vue";
 import {WeekEntity} from "@/logic/services/entity-selector/types";
@@ -209,10 +221,13 @@ export default class CalendarComponent extends Vue {
       color: new InputControl<string>(this.defaultColor),
     });
 
+    errors: string[] = [];
+
     @ProvideReactive('color') color = this.defaultColor;
 
     @Inject('weekConfigService') readonly weekConfigService!: WeekService;
     @Inject('entitySelectorService') readonly entitySelectorService!: EntitySelectorService;
+    @Inject('reportService') readonly reportService!: ReportService;
 
     @Watch('form', { immediate: true, deep: true })
     formChanged(): void {
@@ -237,12 +252,20 @@ export default class CalendarComponent extends Vue {
       if (date) {
         this.selectedDate = stringToDate(String(date));
       }
+      this.errors = [];
     }
 
-    saveSelectedWeek(): void {
+    async saveSelectedWeek(): Promise<void> {
       const entity = this.entitySelectorService.getCurrent() as WeekEntity;
 
       if (!this.form.isValid) {
+        return;
+      }
+
+      if (! (await this.isTokenCorespondedToWeek(this.form.controls.secretKey.value, entity))) {
+        this.errors = [
+            'Токен не соответствует выбранной неделе!'
+        ];
         return;
       }
 
@@ -253,6 +276,19 @@ export default class CalendarComponent extends Vue {
         to: entity.to,
       });
       this.resetConfigInputs();
+    }
+
+    async isTokenCorespondedToWeek(token: string, week: WeekEntity): Promise<boolean> {
+      const weekData = await this.reportService.getWeekDataByToken(token);
+
+      if (weekData && 'error' in weekData || !weekData) {
+        return false;
+      }
+
+      const from = reportDateStringToDate(weekData.dates[0]);
+      const to = reportDateStringToDate(weekData.dates[weekData.dates.length-1]);
+
+      return isEqualDay(week.from, from) && isEqualDay(week.to, to);
     }
 
     get showWeekKeyInput(): boolean {
