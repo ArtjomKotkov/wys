@@ -277,17 +277,17 @@ export default class ReportRedactorComponent extends Vue {
     }
   }
 
-  save(): void {
+  async save(): Promise<void> {
     const currentSelectedDate = stringToDate(this.entitySelectorService.getCurrent()!.id);
     const formValues = this.form.values;
 
-    this.reportService.save({
+    await this.reportService.save({
       date: currentSelectedDate,
       project: formValues.project.key,
       subProject: formValues.subProject.key,
       report: formValues.reportData,
       plan: formValues.planData,
-    }, false);
+    });
   }
 
   async loadFromJira(): Promise<void> {

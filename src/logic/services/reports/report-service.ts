@@ -61,18 +61,17 @@ export class ReportService {
         };
     }
 
-    save(report: ReportData, sendToServer = false): boolean {
+    async save(report: ReportData): Promise<boolean> {
         this.store.save(report);
 
-        if (sendToServer) {
-            const token = this.getTokenByDate(report.date);
-            if (!token) {
-                return false;
-            }
-
-            const reportModel = this.formatReportModel(report, token)
-            this.handler.update(reportModel);
+        const token = this.getTokenByDate(report.date);
+        if (!token) {
+            return false;
         }
+
+        const reportModel = this.formatReportModel(report, token)
+
+        await this.handler.update(reportModel);
 
         return true;
     }
@@ -92,23 +91,44 @@ export class ReportService {
     ): ReportModel {
         return {
             token,
-            date: dateToString(report.date),
-            project_id: report.project,
+            date: dateToReportDateString(report.date),
+            project_id: Number(report.project),
             report: this.formatReport(report.report),
             plan: this.formatPlan(report.plan),
         }
     }
 
     private formatReport(report: Report[]): string {
-        const reportRows = report.map(
-            row => `'${row.name}'${row.subName ? row.subName : ''} [${row.timeRange}]${row.description ? '\n'+row.description : ''}`
+        const reportRows = report.reverse().map(
+            row => {
+                const subName = row.subName ? `(${row.subName})` : '';
+                const hour = this.getFormatedTime('h', row.timeRange.hour);
+                const minute = this.getFormatedTime('m', row.timeRange.minute, !!hour);
+                const timeRange = `[${hour}${minute}]`;
+                const description = row.description ? '\n'+row.description : '';
+
+                return `"${row.name}"${subName} ${timeRange}${description}`;
+            }
         )
         return reportRows.join('\n\n');
     }
 
+    getFormatedTime(type: 'm' | 'h', value: string, extraSpace = false): string {
+        if (Number(value) === 0) {
+            return '';
+        }
+        const extraSpaceString = extraSpace ? ' ' : '';
+
+        return extraSpaceString + value + type;
+    }
+
     private formatPlan(report: Plan[]): string {
-        const planRows = report.map(
-            row => `'${row.name}'${row.subName ? '\n'+row.subName : ''}`
+        const planRows = report.reverse().map(
+            row => {
+                const subName = row.subName ? `(${row.subName})` : '';
+
+                return `"${row.name}"${subName}`;
+            }
         )
         return planRows.join('\n\n');
     }

@@ -62,7 +62,6 @@ export class ReportHandler {
         await fetch(url.toString(), {
             method: 'POST',
             body: JSON.stringify(data),
-            mode: 'no-cors',
         });
     }
 }

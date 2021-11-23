@@ -143,8 +143,6 @@ export default class ReportForm extends Vue {
   blankTaskType: SelectItem = {key: 'blank', title: 'Без типа'};
   defaultTimeRange: TimeRange = {hour: '0', minute: '0'};
 
-  taskTypes: SelectItem[] = [this.blankTaskType];
-
   mounted(): void {
     this.modelValue?.forEach(reportData => this.add(
         reportData.name,
@@ -200,6 +198,7 @@ export default class ReportForm extends Vue {
   private getFormatedReportData(): Report[] {
     return this.forms.map(form => {
       const data = form.values;
+
       return {
         name: data.name,
         subName: data.subName,

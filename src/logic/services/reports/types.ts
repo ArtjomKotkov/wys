@@ -43,7 +43,7 @@ export interface ServerJira {
 export interface ReportModel {
     token?: string;
     date?: string;
-    project_id?: string;
+    project_id?: string | number;
     report: string;
     plan: string;
 }
