@@ -8,6 +8,10 @@
 </template>
 
 <style lang="scss">
+body {
+  margin: 0;
+}
+
 #app {
   --dark-gray: #191715;
   --light-gray: #2B2828;

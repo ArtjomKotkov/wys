@@ -6,9 +6,14 @@
 </template>
 
 <style lang="scss">
+
 .main-component-wrapper {
+  min-height: 100vh;
+
   position: relative;
   flex-grow: 1;
+
+  overflow-y: hidden;
 }
 
 .loading {

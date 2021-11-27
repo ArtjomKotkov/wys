@@ -2,7 +2,7 @@ import {JiraData, ReportModel, TokenApiResponse} from "@/logic/services/reports"
 
 
 export class ReportHandler {
-    baseUrl = 'http://127.0.0.1:5000';
+    baseUrl = 'http://localhost/api';
 
     async token(token: string): Promise<TokenApiResponse> {
         const url = new URL(`${this.baseUrl}/token`);

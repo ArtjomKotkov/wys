@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="token-wrapp">
     <div v-if="failed">
       Невалидный токен или невозможно загрузить информацию в данный момент.
     </div>
@@ -17,7 +17,12 @@
 </template>
 
 <style lang="scss">
+  .token-wrapp {
+    height: 100%;
+  }
+
   .token-parser-wrapper {
+    height: 100%;
     margin: 50px 0;
 
     div {

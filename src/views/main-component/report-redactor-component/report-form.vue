@@ -56,6 +56,8 @@
     display: flex;
     flex-direction: column;
     gap: 15px;
+
+    margin-bottom: 100px;
   }
 
   .form-block {

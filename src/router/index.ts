@@ -3,9 +3,15 @@ import WeekChartsComponent from "@/views/main-component/week-charts/week-charts.
 import ReportRedactorComponent from "@/views/main-component/report-redactor-component/report-redactor.vue";
 import SettingsComponent from "@/views/main-component/settings/settings.vue";
 import TokenParserComponent from "@/views/main-component/token/token-parser.vue";
+import NewsComponent from "@/views/main-component/news.vue";
 
 
 const routes: Array<RouteRecordRaw> = [
+  {
+    path: '',
+    name: 'news',
+    component: NewsComponent,
+  },
   {
     path: '/day/:date',
     name: 'report-redactor',
@@ -29,7 +35,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(),
   routes,
 })
 

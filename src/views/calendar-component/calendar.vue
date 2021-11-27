@@ -66,6 +66,7 @@
   }
 
   .calendar-wrapper {
+    min-height: 100vh;
     position: relative;
 
     z-index: 1;
